@@ -86,7 +86,7 @@ def _impl(ctx):
         target_cpu = "aarch64-linux-gnu",
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
-        abi_version = "eabi",
+        abi_version = "gnu",
         abi_libc_version = ctx.attr.gcc_version,
         tool_paths = tool_paths,
         features = [
@@ -95,7 +95,7 @@ def _impl(ctx):
         ],
     )
 
-cc_arm_none_eabi_config = rule(
+cc_aarch64_linux_gnu_config = rule(
     implementation = _impl,
     attrs = {
         "toolchain_identifier": attr.string(default = ""),
