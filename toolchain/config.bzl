@@ -28,13 +28,21 @@ def _impl(ctx):
         "external/{}/aarch64-linux-gnu/include/c++/{}/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
         "external/{}/aarch64-linux-gnu/include/c++/{}/aarch64-linux-gnu/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "-isystem",
+        "external/{}/aarch64-linux-gnu/libc/usr/include/".format(ctx.attr.gcc_repo),
     ]
 
     linker_flags = [
+        "--sysroot=external/{}/aarch64-linux-gnu/libc".format(ctx.attr.gcc_repo),
         "-L",
-        "external/{}/aarch64-linux-gnu/lib".format(ctx.attr.gcc_repo),
+        "external/{}/aarch64-linux-gnu/libc/lib".format(ctx.attr.gcc_repo),
+        "-L",
+        "external/{}/aarch64-linux-gnu/libc/usr/lib".format(ctx.attr.gcc_repo),
+        "-L",
+        "external/{}/aarch64-linux-gnu/lib64".format(ctx.attr.gcc_repo),
         "-L",
         "external/{}/lib/gcc/aarch64-linux-gnu/{}".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "-llibstdc++.a",
         "-llibc.a",
         "-llibgcc.a",
     ]
