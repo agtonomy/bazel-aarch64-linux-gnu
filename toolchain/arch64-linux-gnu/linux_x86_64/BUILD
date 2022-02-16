@@ -1,5 +1,3 @@
-# toolchains/aarch64-linux-gnu/linux/BUILD.bazel
-
 load("@aarch64_linux_gnu//toolchain:config.bzl", "cc_aarch64_linux_gnu_config")
 
 package(default_visibility = ["//visibility:public"])
