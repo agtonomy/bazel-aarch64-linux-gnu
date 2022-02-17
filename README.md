@@ -9,22 +9,32 @@ Currently there is one toolchain implemented: `gcc-linaro-7.5.0-2019.12-x86_64_a
 It is intended for x86_64/linux hosts. There will likely be more toolchains added in the future.
 
 ## Usage
-Include the following in your `WORKSPACE`
+Include the following in your `WORKSPACE` with appropriate commit and sha256sum
+
 ```python
+
+AARCH64_LINUX_GNU_COMMIT = "INSERT COMMIT HASH HERE"
+
 http_archive(
     name = "aarch64_linux_gnu",
-    sha256 = "INSERT SHA256 of .tar.gz",
-    strip_prefix = "Catch2-2.13.7",
-    urls = ["https://github.com/agtonomy/bazel-aarch64-linux-gnu/archive/COMMIT_HASH.tar.gz"],
+    sha256 = "INSERT SHA256 HERE",
+    strip_prefix = "bazel-aarch64-linux-gnu-" + AARCH64_LINUX_GNU_COMMIT,
+    urls = ["https://github.com/agtonomy/bazel-aarch64-linux-gnu/archive/" + AARCH64_LINUX_GNU_COMMIT + ".tar.gz"],
 )
 
 load("@aarch64_linux_gnu//:deps.bzl", "aarch64_linux_gnu_deps")
+
 aarch64_linux_gnu_deps()
 ```
 
 Then include the following in your `.bazelrc`
-```
+```bash
 build:aarch64 --incompatible_enable_cc_toolchain_resolution --platforms=@aarch64_linux_gnu//platforms:aarch64_linux_generic
+```
+
+Or the older method
+```bash
+build:aarch64 --cpu=aarch64 --crosstool_top=@aarch64_linux_gnu//toolchain --host_crosstool_top=@bazel_tools//tools/cpp:toolchain
 ```
 
 Finally, build a cc_binary target like so:
