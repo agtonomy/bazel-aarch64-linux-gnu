@@ -5,7 +5,7 @@ load("@rules_cc//cc:defs.bzl", "cc_toolchain", "cc_toolchain_suite")
 cc_toolchain_suite(
     name = "toolchain",
     toolchains = {
-        "k8": ":cc_toolchain_linux_x86_64",
+        "aarch64": ":cc_toolchain_linux_x86_64",
     },
 )
 
