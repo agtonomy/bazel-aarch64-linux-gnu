@@ -68,7 +68,6 @@ def _impl(ctx):
         flag_sets = [
             flag_set(
                 actions = [
-                    ACTION_NAMES.linkstamp_compile,
                     ACTION_NAMES.cpp_link_executable,
                     ACTION_NAMES.cpp_link_dynamic_library,
                     ACTION_NAMES.cpp_link_nodeps_dynamic_library,
