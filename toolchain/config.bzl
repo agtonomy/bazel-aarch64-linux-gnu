@@ -36,6 +36,7 @@ def _impl(ctx):
         "-L",
         "external/{}/aarch64-linux-gnu/libc/lib".format(ctx.attr.gcc_repo),
         "-lstdc++",
+        "-lm",
     ]
 
     toolchain_compiler_flags = feature(
