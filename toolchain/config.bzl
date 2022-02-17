@@ -33,18 +33,9 @@ def _impl(ctx):
     ]
 
     linker_flags = [
-        "--sysroot=external/{}/aarch64-linux-gnu/libc".format(ctx.attr.gcc_repo),
         "-L",
         "external/{}/aarch64-linux-gnu/libc/lib".format(ctx.attr.gcc_repo),
-        "-L",
-        "external/{}/aarch64-linux-gnu/libc/usr/lib".format(ctx.attr.gcc_repo),
-        "-L",
-        "external/{}/aarch64-linux-gnu/lib64".format(ctx.attr.gcc_repo),
-        "-L",
-        "external/{}/lib/gcc/aarch64-linux-gnu/{}".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-llibstdc++.a",
-        "-llibc.a",
-        "-llibgcc.a",
+        "-lstdc++",
     ]
 
     toolchain_compiler_flags = feature(
@@ -78,6 +69,9 @@ def _impl(ctx):
             flag_set(
                 actions = [
                     ACTION_NAMES.linkstamp_compile,
+                    ACTION_NAMES.cpp_link_executable,
+                    ACTION_NAMES.cpp_link_dynamic_library,
+                    ACTION_NAMES.cpp_link_nodeps_dynamic_library,
                 ],
                 flag_groups = [
                     flag_group(flags = linker_flags),
