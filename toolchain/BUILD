@@ -20,7 +20,7 @@ cc_toolchain(
     strip_files = "//toolchain/aarch64-linux-gnu/linux_x86_64:strip_files",
     supports_param_files = 0,
     toolchain_config = "//toolchain/aarch64-linux-gnu/linux_x86_64:config",
-    toolchain_identifier = "aarch64_linux_gnu_linux_x86_64",
+    toolchain_identifier = "aarch64-none-linux-gnu",
 )
 
 toolchain(

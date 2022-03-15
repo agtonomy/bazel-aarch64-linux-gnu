@@ -8,7 +8,7 @@ def aarch64_linux_gnu_deps():
     """Workspace dependencies for the aarch64 linux gnu toolchain"""
 
     http_archive(
-        name = "aarch64_linux_gnu_linux_x86_64",
+        name = "aarch64-none-linux-gnu",
         build_file = "@aarch64_linux_gnu//toolchain:compiler.BUILD",
         sha256 = "52dbac3eb71dbe0916f60a8c5ab9b7dc9b66b3ce513047baa09fae56234e53f3",
         strip_prefix = "gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu",

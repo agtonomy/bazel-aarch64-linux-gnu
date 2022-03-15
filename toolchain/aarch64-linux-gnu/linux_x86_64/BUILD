@@ -2,7 +2,7 @@ load("@aarch64_linux_gnu//toolchain:config.bzl", "cc_aarch64_linux_gnu_config")
 
 package(default_visibility = ["//visibility:public"])
 
-compiler = "aarch64_linux_gnu_linux_x86_64"
+compiler = "aarch64-none-linux-gnu"
 
 filegroup(
     name = "all_files",
@@ -64,6 +64,6 @@ cc_aarch64_linux_gnu_config(
     gcc_repo = compiler,
     gcc_version = "7.5.0",
     host_system_name = "linux_x86_64",
-    toolchain_identifier = "aarch64_linux_gnu_linux_x86_64",
+    toolchain_identifier = "aarch64-none-linux-gnu",
     wrapper_path = "aarch64-linux-gnu/linux_x86_64",
 )
