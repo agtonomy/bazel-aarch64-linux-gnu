@@ -10,9 +10,9 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "aarch64_linux_gnu_linux_x86_64",
         build_file = "@aarch64_linux_gnu//toolchain:compiler.BUILD",
-        sha256 = "3b6465fb91564b54bbdf9578b4cc3aa198dd363f7a43820eab06ea2932c8e0bf",
-        strip_prefix = "gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu",
-        url = "https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz",
+        sha256 = "52dbac3eb71dbe0916f60a8c5ab9b7dc9b66b3ce513047baa09fae56234e53f3",
+        strip_prefix = "gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu",
+        url = "https://developer.arm.com/-/media/Files/downloads/gnu/11.2-2022.02/binrel/gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu.tar.xz",
     )
 
     native.register_toolchains(
