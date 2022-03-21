@@ -19,22 +19,22 @@ def _impl(ctx):
 
     include_flags = [
         "-isystem",
-        "external/{}/aarch64-linux-gnu/include".format(ctx.attr.gcc_repo),
+        "external/{}/aarch64-none-linux-gnu/include".format(ctx.attr.gcc_repo),
         "-isystem",
-        "external/{}/lib/gcc/aarch64-linux-gnu/{}/include".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/lib/gcc/aarch64-none-linux-gnu/{}/include".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/lib/gcc/aarch64-linux-gnu/{}/include-fixed".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/lib/gcc/aarch64-none-linux-gnu/{}/include-fixed".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/aarch64-linux-gnu/include/c++/{}/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/aarch64-none-linux-gnu/include/c++/{}/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/aarch64-linux-gnu/include/c++/{}/aarch64-linux-gnu/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/aarch64-none-linux-gnu/include/c++/{}/aarch64-none-linux-gnu/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/aarch64-linux-gnu/libc/usr/include/".format(ctx.attr.gcc_repo),
+        "external/{}/aarch64-none-linux-gnu/libc/usr/include/".format(ctx.attr.gcc_repo),
     ]
 
     linker_flags = [
         "-L",
-        "external/{}/aarch64-linux-gnu/libc/lib".format(ctx.attr.gcc_repo),
+        "external/{}/aarch64-none-linux-gnu/libc/lib".format(ctx.attr.gcc_repo),
         "-lstdc++",
         "-lm",
     ]
