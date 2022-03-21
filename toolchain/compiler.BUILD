@@ -8,63 +8,63 @@ exports_files(glob(["bin/*"]))
 # gcc executables.
 filegroup(
     name = "gcc",
-    srcs = glob(["bin/aarch64-linux-gnu-gcc*"]),
+    srcs = glob(["bin/*-gcc*"]),
 )
 
 # ar executables.
 filegroup(
     name = "ar",
-    srcs = glob(["bin/aarch64-linux-gnu-ar*"]),
+    srcs = glob(["bin/*-ar*"]),
 )
 
 # ld executables.
 filegroup(
     name = "ld",
-    srcs = glob(["bin/aarch64-linux-gnu-ld*"]),
+    srcs = glob(["bin/*-ld*"]),
 )
 
 # nm executables.
 filegroup(
     name = "nm",
-    srcs = glob(["bin/aarch64-linux-gnu-nm*"]),
+    srcs = glob(["bin/*-nm*"]),
 )
 
 # objcopy executables.
 filegroup(
     name = "objcopy",
-    srcs = glob(["bin/aarch64-linux-gnu-objcopy*"]),
+    srcs = glob(["bin/*-objcopy*"]),
 )
 
 # objdump executables.
 filegroup(
     name = "objdump",
-    srcs = glob(["bin/aarch64-linux-gnu-objdump*"]),
+    srcs = glob(["bin/*-objdump*"]),
 )
 
 # strip executables.
 filegroup(
     name = "strip",
-    srcs = glob(["bin/aarch64-linux-gnu-strip*"]),
+    srcs = glob(["bin/*-strip*"]),
 )
 
 # as executables.
 filegroup(
     name = "as",
-    srcs = glob(["bin/aarch64-linux-gnu-as*"]),
+    srcs = glob(["bin/*-as*"]),
 )
 
 # size executables.
 filegroup(
     name = "size",
-    srcs = glob(["bin/aarch64-linux-gnu-size*"]),
+    srcs = glob(["bin/*-size*"]),
 )
 
 # libraries and headers.
 filegroup(
     name = "compiler_pieces",
     srcs = glob([
-        "aarch64-linux-gnu/**",
-        "lib/gcc/aarch64-linux-gnu/**",
+        "aarch64-none-linux-gnu/**",
+        "lib/gcc/aarch64-none-linux-gnu/**",
     ]),
 )
 
