@@ -2,7 +2,7 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Using Linaro release https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/
+# Using Arm GNU Toolchain releases from https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads
 
 def aarch64_linux_gnu_deps():
     """Workspace dependencies for the aarch64 linux gnu toolchain"""
