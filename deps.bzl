@@ -10,9 +10,9 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "aarch64-none-linux-gnu",
         build_file = "@aarch64_linux_gnu//toolchain:compiler.BUILD",
-        sha256 = "52dbac3eb71dbe0916f60a8c5ab9b7dc9b66b3ce513047baa09fae56234e53f3",
-        strip_prefix = "gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu",
-        url = "https://developer.arm.com/-/media/Files/downloads/gnu/11.2-2022.02/binrel/gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu.tar.xz",
+        sha256 = "1e33d53dea59c8de823bbdfe0798280bdcd138636c7060da9d77a97ded095a84",
+        strip_prefix = "gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu",
+        url = "https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu.tar.xz",
     )
 
     native.register_toolchains(
