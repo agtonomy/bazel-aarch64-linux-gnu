@@ -1,5 +1,5 @@
 load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
-load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path")
+load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set")
 
 def wrapper_path(ctx, tool):
     wrapped_path = "{}/aarch64-linux-gnu-{}{}".format(ctx.attr.wrapper_path, tool, ctx.attr.wrapper_ext)
@@ -39,28 +39,86 @@ def _impl(ctx):
         "-lm",
     ]
 
+    opt_feature_flags = [
+        "-g0",
+        "-O2",
+        "-D_FORTIFY_SOURCE=1",
+        "-DNDEBUG",
+        "-ffunction-sections",
+        "-fdata-sections",
+    ]
+
+    dbg_feature_flags = [
+        "-g",
+        "-fPIC",
+    ]
+
+    fastbuild_feature_flags = [
+        "-fPIC",
+    ]
+
+    opt_feature = feature(name = "opt")
+    dbg_feature = feature(name = "dbg")
+    fastbuild_feature = feature(name = "fastbuild")
+
+    all_compile_actions = [
+        ACTION_NAMES.c_compile,
+        ACTION_NAMES.cpp_compile,
+        ACTION_NAMES.linkstamp_compile,
+        ACTION_NAMES.assemble,
+        ACTION_NAMES.preprocess_assemble,
+        ACTION_NAMES.cpp_header_parsing,
+        ACTION_NAMES.cpp_module_compile,
+        ACTION_NAMES.cpp_module_codegen,
+        ACTION_NAMES.clif_match,
+        ACTION_NAMES.lto_backend,
+    ]
+
+    compile_flag_sets = []
+
+    compile_flag_sets.append(
+        flag_set(
+            actions = all_compile_actions,
+            flag_groups = [
+                flag_group(flags = include_flags),
+            ],
+        ),
+    )
+
+    compile_flag_sets.append(
+        flag_set(
+            actions = all_compile_actions,
+            flag_groups = [
+                flag_group(flags = opt_feature_flags),
+            ],
+            with_features = [with_feature_set(features = ["opt"])],
+        ),
+    )
+
+    compile_flag_sets.append(
+        flag_set(
+            actions = all_compile_actions,
+            flag_groups = [
+                flag_group(flags = dbg_feature_flags),
+            ],
+            with_features = [with_feature_set(features = ["dbg"])],
+        ),
+    )
+
+    compile_flag_sets.append(
+        flag_set(
+            actions = all_compile_actions,
+            flag_groups = [
+                flag_group(flags = fastbuild_feature_flags),
+            ],
+            with_features = [with_feature_set(features = ["fastbuild"])],
+        ),
+    )
+
     toolchain_compiler_flags = feature(
         name = "compiler_flags",
         enabled = True,
-        flag_sets = [
-            flag_set(
-                actions = [
-                    ACTION_NAMES.assemble,
-                    ACTION_NAMES.preprocess_assemble,
-                    ACTION_NAMES.linkstamp_compile,
-                    ACTION_NAMES.c_compile,
-                    ACTION_NAMES.cpp_compile,
-                    ACTION_NAMES.cpp_header_parsing,
-                    ACTION_NAMES.cpp_module_compile,
-                    ACTION_NAMES.cpp_module_codegen,
-                    ACTION_NAMES.lto_backend,
-                    ACTION_NAMES.clif_match,
-                ],
-                flag_groups = [
-                    flag_group(flags = include_flags),
-                ],
-            ),
-        ],
+        flag_sets = compile_flag_sets,
     )
 
     toolchain_linker_flags = feature(
@@ -92,6 +150,9 @@ def _impl(ctx):
         abi_libc_version = ctx.attr.gcc_version,
         tool_paths = tool_paths,
         features = [
+            opt_feature,
+            dbg_feature,
+            fastbuild_feature,
             toolchain_compiler_flags,
             toolchain_linker_flags,
         ],
