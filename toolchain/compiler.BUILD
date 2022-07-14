@@ -1,6 +1,6 @@
 # toolchains/compiler.BUILD
 
-package(default_visibility = ['//visibility:public'])
+package(default_visibility = ["//visibility:public"])
 
 # export the executable files to make them available for direct use.
 exports_files(glob(["bin/*"]))
