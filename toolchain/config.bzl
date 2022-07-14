@@ -33,8 +33,6 @@ def _impl(ctx):
     ]
 
     linker_flags = [
-        "-L",
-        "external/{}/aarch64-none-linux-gnu/libc/lib".format(ctx.attr.gcc_repo),
         "-lstdc++",
         "-lm",
     ]

@@ -62,7 +62,7 @@ filegroup(
 cc_aarch64_linux_gnu_config(
     name = "config",
     gcc_repo = compiler,
-    gcc_version = "9.2.1",
+    gcc_version = "10.3.1",
     host_system_name = "linux_x86_64",
     toolchain_identifier = "aarch64_linux_gnu_linux_x86_64",
     wrapper_path = "aarch64-none-linux-gnu/linux_x86_64",
