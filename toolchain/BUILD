@@ -11,15 +11,15 @@ cc_toolchain_suite(
 
 cc_toolchain(
     name = "cc_toolchain_linux_x86_64",
-    all_files = "//toolchain/aarch64-linux-gnu/linux_x86_64:all_files",
-    ar_files = "//toolchain/aarch64-linux-gnu/linux_x86_64:ar_files",
-    compiler_files = "//toolchain/aarch64-linux-gnu/linux_x86_64:compiler_files",
+    all_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:all_files",
+    ar_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:ar_files",
+    compiler_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:compiler_files",
     dwp_files = ":empty",
-    linker_files = "//toolchain/aarch64-linux-gnu/linux_x86_64:linker_files",
-    objcopy_files = "//toolchain/aarch64-linux-gnu/linux_x86_64:objcopy_files",
-    strip_files = "//toolchain/aarch64-linux-gnu/linux_x86_64:strip_files",
+    linker_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:linker_files",
+    objcopy_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:objcopy_files",
+    strip_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:strip_files",
     supports_param_files = 0,
-    toolchain_config = "//toolchain/aarch64-linux-gnu/linux_x86_64:config",
+    toolchain_config = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:config",
     toolchain_identifier = "aarch64_linux_gnu_linux_x86_64",
 )
 
