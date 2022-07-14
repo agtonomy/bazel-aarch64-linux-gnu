@@ -1,12 +1,10 @@
 # bazel-aarch64-linux-gnu
-Bazel cross toolchains targetting aarch64/linux systems
+This repo provides a Bazel cross toolchain for x86_64/Linux host and aarch64/Linux target
 
 The structure was inspired by: https://asnaghi.me/post/embedded-bazel/
 
-## Toolchains
-Currently there is one toolchain implemented: `gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu`
-
-It is intended for x86_64/linux hosts. There will likely be more toolchains added in the future.
+## Toolchain
+The toolchain implemented is : `gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu`
 
 ## Usage
 Include the following in your `WORKSPACE` with appropriate commit and sha256sum
