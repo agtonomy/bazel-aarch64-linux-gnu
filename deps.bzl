@@ -2,7 +2,7 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Using ARM release https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-a/downloads/9-2-2019-12
+# Using ARM release https://developer.arm.com/downloads/-/gnu-rm (Version 10.3-2021.10)
 
 def aarch64_linux_gnu_deps():
     """Workspace dependencies for the aarch64 linux gnu toolchain"""
