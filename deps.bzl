@@ -2,7 +2,7 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Using Linaro release https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/
+# Using ARM release https://developer.arm.com/downloads/-/gnu-rm (Version 10.3-2021.10)
 
 def aarch64_linux_gnu_deps():
     """Workspace dependencies for the aarch64 linux gnu toolchain"""
@@ -10,9 +10,9 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "aarch64_linux_gnu_linux_x86_64",
         build_file = "@aarch64_linux_gnu//toolchain:compiler.BUILD",
-        sha256 = "3b6465fb91564b54bbdf9578b4cc3aa198dd363f7a43820eab06ea2932c8e0bf",
-        strip_prefix = "gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu",
-        url = "https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz",
+        sha256 = "1e33d53dea59c8de823bbdfe0798280bdcd138636c7060da9d77a97ded095a84",
+        strip_prefix = "gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu",
+        url = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu.tar.xz",
     )
 
     native.register_toolchains(

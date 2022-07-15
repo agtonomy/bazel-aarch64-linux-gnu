@@ -3,4 +3,4 @@ set -euo pipefail
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 EXECROOT="$SCRIPT_DIR/../../../../../"
-"$EXECROOT"/external/aarch64_linux_gnu_linux_x86_64/bin/aarch64-linux-gnu-objdump "$@"
+"$EXECROOT"/external/aarch64_linux_gnu_linux_x86_64/bin/aarch64-none-linux-gnu-cpp "$@"

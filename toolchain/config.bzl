@@ -2,7 +2,7 @@ load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set")
 
 def wrapper_path(ctx, tool):
-    wrapped_path = "{}/aarch64-linux-gnu-{}{}".format(ctx.attr.wrapper_path, tool, ctx.attr.wrapper_ext)
+    wrapped_path = "{}/aarch64-none-linux-gnu-{}{}".format(ctx.attr.wrapper_path, tool, ctx.attr.wrapper_ext)
     return tool_path(name = tool, path = wrapped_path)
 
 def _impl(ctx):
@@ -19,22 +19,20 @@ def _impl(ctx):
 
     include_flags = [
         "-isystem",
-        "external/{}/aarch64-linux-gnu/include".format(ctx.attr.gcc_repo),
+        "external/{}/aarch64-none-linux-gnu/include".format(ctx.attr.gcc_repo),
         "-isystem",
-        "external/{}/lib/gcc/aarch64-linux-gnu/{}/include".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/lib/gcc/aarch64-none-linux-gnu/{}/include".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/lib/gcc/aarch64-linux-gnu/{}/include-fixed".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/lib/gcc/aarch64-none-linux-gnu/{}/include-fixed".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/aarch64-linux-gnu/include/c++/{}/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/aarch64-none-linux-gnu/include/c++/{}/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/aarch64-linux-gnu/include/c++/{}/aarch64-linux-gnu/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
+        "external/{}/aarch64-none-linux-gnu/include/c++/{}/aarch64-none-linux-gnu/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
         "-isystem",
-        "external/{}/aarch64-linux-gnu/libc/usr/include/".format(ctx.attr.gcc_repo),
+        "external/{}/aarch64-none-linux-gnu/libc/usr/include/".format(ctx.attr.gcc_repo),
     ]
 
     linker_flags = [
-        "-L",
-        "external/{}/aarch64-linux-gnu/libc/lib".format(ctx.attr.gcc_repo),
         "-lstdc++",
         "-lm",
     ]
@@ -142,8 +140,8 @@ def _impl(ctx):
         ctx = ctx,
         toolchain_identifier = ctx.attr.toolchain_identifier,
         host_system_name = ctx.attr.host_system_name,
-        target_system_name = "aarch64-linux-gnu",
-        target_cpu = "aarch64-linux-gnu",
+        target_system_name = "aarch64-none-linux-gnu",
+        target_cpu = "aarch64-none-linux-gnu",
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
         abi_version = "gnu",

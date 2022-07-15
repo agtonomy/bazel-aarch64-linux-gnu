@@ -17,7 +17,7 @@ filegroup(
 filegroup(
     name = "compiler_files",
     srcs = [
-        "aarch64-linux-gnu-gcc",
+        "aarch64-none-linux-gnu-gcc",
         "@{}//:compiler_pieces".format(compiler),
         "@{}//:gcc".format(compiler),
     ],
@@ -26,8 +26,8 @@ filegroup(
 filegroup(
     name = "linker_files",
     srcs = [
-        "aarch64-linux-gnu-gcc",
-        "aarch64-linux-gnu-ld",
+        "aarch64-none-linux-gnu-gcc",
+        "aarch64-none-linux-gnu-ld",
         "@{}//:ar".format(compiler),
         "@{}//:compiler_pieces".format(compiler),
         "@{}//:gcc".format(compiler),
@@ -38,7 +38,7 @@ filegroup(
 filegroup(
     name = "ar_files",
     srcs = [
-        "aarch64-linux-gnu-ar",
+        "aarch64-none-linux-gnu-ar",
         "@{}//:ar".format(compiler),
     ],
 )
@@ -46,7 +46,7 @@ filegroup(
 filegroup(
     name = "objcopy_files",
     srcs = [
-        "aarch64-linux-gnu-objcopy",
+        "aarch64-none-linux-gnu-objcopy",
         "@{}//:objcopy".format(compiler),
     ],
 )
@@ -54,7 +54,7 @@ filegroup(
 filegroup(
     name = "strip_files",
     srcs = [
-        "aarch64-linux-gnu-strip",
+        "aarch64-none-linux-gnu-strip",
         "@{}//:strip".format(compiler),
     ],
 )
@@ -62,8 +62,8 @@ filegroup(
 cc_aarch64_linux_gnu_config(
     name = "config",
     gcc_repo = compiler,
-    gcc_version = "7.5.0",
+    gcc_version = "10.3.1",
     host_system_name = "linux_x86_64",
     toolchain_identifier = "aarch64_linux_gnu_linux_x86_64",
-    wrapper_path = "aarch64-linux-gnu/linux_x86_64",
+    wrapper_path = "aarch64-none-linux-gnu/linux_x86_64",
 )
