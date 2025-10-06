@@ -141,7 +141,7 @@ def _impl(ctx):
         toolchain_identifier = ctx.attr.toolchain_identifier,
         host_system_name = ctx.attr.host_system_name,
         target_system_name = "aarch64-none-linux-gnu",
-        target_cpu = "aarch64-none-linux-gnu",
+        target_cpu = "aarch64", # target_cpu field is used to construct the _solib path
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
         abi_version = "gnu",
