@@ -31,7 +31,8 @@ There are a few major issues to work around, both handled by:
 3. Ubuntu's compiler binaries aren't statically linked and require a few shared
     libraries from the bundle to execute on the host, which they don't seem to
     be able to just pick up from the bazel sandbox enviroment, so use `find` to
-    set and export `$LD_LIBRARY_PATH`.
+    set and export `$LD_LIBRARY_PATH`. This is also added to
+    `aarch64-linux-gnu-ar`.
 
 Minor issues:
 1. Ubuntu gcc defaults to defining `-D_FORTIFY_SOURCE` so when we add our setting
