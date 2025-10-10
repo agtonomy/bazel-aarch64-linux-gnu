@@ -8,13 +8,39 @@ def aarch64_linux_gnu_deps():
     """Workspace dependencies for the aarch64 linux gnu toolchain"""
 
     http_archive(
-        name = "aarch64_linux_gnu_linux_x86_64",
-        build_file = "@aarch64_linux_gnu//toolchain:compiler.BUILD",
-        sha256 = "1e33d53dea59c8de823bbdfe0798280bdcd138636c7060da9d77a97ded095a84",
-        strip_prefix = "gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu",
-        url = "https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-linux-gnu.tar.xz",
+        name = "ubuntu-22.04-arm64-cross",
+        build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-arm64-cross.BUILD",
+        sha256 = "655de222f8a0917ca0f88a0160e93736ae69dcf1f018d68b856c8ae6713f71c4",
+        strip_prefix = "ubuntu-22.04-arm64-cross",
+        urls = [
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-arm64-cross.tar.zst",
+        ],
+    )
+
+    # For Jetpack 6.2:
+    http_archive(
+        name = "linux-libc-5.15.0",
+	build_file = "@aarch64_linux_gnu//toolchain:linux-libc.BUILD",
+        sha256 = "7fcb6058b1bcb77dff0cce03872d774830b0e82fd219659d488a6c7978e77b23",
+        strip_prefix = "linux-libc-dev-arm64-cross",
+        urls = [
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/linux-libc-dev-arm64-cross_5.15.0-22.22cross3.tar.zst",
+        ],
+    )
+
+    # For Jetpack 5.1.2:
+    http_archive(
+        name = "linux-libc-5.4.0",
+	build_file = "@aarch64_linux_gnu//toolchain:linux-libc.BUILD",
+        sha256 = "8deb000e7cb26ac0d39e3092d52e18d901ce9cea1c8026158993535dfdb2187a",
+        strip_prefix = "linux-libc-dev-arm64-cross",
+        urls = [
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/linux-libc-dev-arm64-cross_5.4.0-110.124cross1.tar.zst",
+        ],
     )
 
     native.register_toolchains(
-        "@aarch64_linux_gnu//toolchain:linux_x86_64",
+        "@aarch64_linux_gnu//toolchain:aarch64_linux_x86_64",
+        "@aarch64_linux_gnu//toolchain:jp512_linux_x86_64",
+        "@aarch64_linux_gnu//toolchain:jp62_linux_x86_64",
     )

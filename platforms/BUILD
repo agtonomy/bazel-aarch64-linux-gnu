@@ -2,6 +2,10 @@
 # automatically resolve a toolchain if all contraints for the target platform
 # match, including our contraints for jetpack and nvidia
 
+# Define all of the platform constraints here because bazel will only
+# automatically resolve a toolchain if all contraints for the target platform
+# match, including our custom contraints for jetpack and nvidia
+
 package(default_visibility = ["//visibility:public"])
 
 constraint_setting(name = "jetpack_version")
