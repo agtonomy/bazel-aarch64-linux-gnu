@@ -30,6 +30,12 @@ constraint_value(
     visibility = ["//visibility:public"],
 )
 
+constraint_value(
+    name = "generic",
+    constraint_setting = ":nvidia_platform",
+    visibility = ["//visibility:public"],
+)
+
 platform(
     name = "tegra_jetpack_512",
     constraint_values = [
@@ -48,6 +54,16 @@ platform(
         "@platforms//cpu:arm64",
         ":jetpack_62",
         ":tegra",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+platform(
+    name = "aarch64_generic",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+        ":generic",
     ],
     visibility = ["//visibility:public"],
 )

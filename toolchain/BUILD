@@ -45,6 +45,21 @@ cc_toolchain(
 
 # Ubuntu 22.04 gcc 11 ARM64 on x86_64 Cross Compile Toolchain
 cc_toolchain(
+    name = "aarch64_gcc-11_linux_x86_64",
+    all_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp62_all_files",
+    ar_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:ar_files",
+    compiler_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp62_compiler_files",
+    dwp_files = ":empty",
+    linker_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp62_linker_files",
+    objcopy_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:objcopy_files",
+    strip_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:strip_files",
+    supports_param_files = 0,
+    toolchain_config = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp62_config",
+    toolchain_identifier = "jp62_linux_x86_64",
+)
+
+# Same definitions as aarch64_gcc-11_linux_x86_64, but creates a distinct target
+cc_toolchain(
     name = "jp62_aarch64_gcc-11_linux_x86_64",
     all_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp62_all_files",
     ar_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:ar_files",
@@ -55,10 +70,10 @@ cc_toolchain(
     strip_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:strip_files",
     supports_param_files = 0,
     toolchain_config = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp62_config",
-    toolchain_identifier = "ubuntu-22.04-arm64-cross",
+    toolchain_identifier = "jp62_linux_x86_64",
 )
 
-# Ubuntu 22.04 gcc 11 ARM64 on x86_64 Cross Compile Toolchain
+# Same as jp62, but bundles linux-libc-headers from kernel 5.4.0:
 cc_toolchain(
     name = "jp512_aarch64_gcc-11_linux_x86_64",
     all_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp512_all_files",
@@ -70,26 +85,10 @@ cc_toolchain(
     strip_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:strip_files",
     supports_param_files = 0,
     toolchain_config = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp512_config",
-    toolchain_identifier = "ubuntu-22.04-arm64-cross",
-)
-
-# Generic ARM64 cross-compile on X86-64 host toolchain:
-toolchain(
-    name = "linux_x86_64",
-    exec_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-    ],
-    target_compatible_with = [
-        "@platforms//os:linux",
-        "@platforms//cpu:aarch64",
-    ],
-    toolchain = ":cc_toolchain_linux_x86_64",
-    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+    toolchain_identifier = "jp512_linux_x86_64",
 )
 
 # gcc11 cross compile on x86_64 host targeting ARM64 Ubuntu 22.04 / Linux 5.10.0
-# NOT DONE
 toolchain(
     name = "jp512_linux_x86_64",
     exec_compatible_with = [
@@ -123,8 +122,6 @@ toolchain(
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
 
-# The JP62 toolchain with fewer platform constraints, which is just the
-# Ubuntu 22.04 gcc-11 arm64 cross-compile toolchain:
 toolchain(
     name = "aarch64_linux_x86_64",
     exec_compatible_with = [
@@ -134,7 +131,8 @@ toolchain(
     target_compatible_with = [
         "@platforms//os:linux",
         "@platforms//cpu:aarch64",
-    ],
-    toolchain = ":jp62_aarch64_gcc-11_linux_x86_64",
+        "//platforms:generic",
+   ],
+    toolchain = ":aarch64_gcc-11_linux_x86_64",
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
