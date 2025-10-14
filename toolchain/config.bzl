@@ -2,8 +2,7 @@ load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
 load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set")
 
 def wrapper_path(ctx, tool):
-    wrapped_path = "{}/aarch64-none-linux-gnu-{}{}".format(ctx.attr.wrapper_path, tool, ctx.attr.wrapper_ext)
-    return tool_path(name = tool, path = wrapped_path)
+    return tool_path(name = tool, path = ctx.attr.wrapper_path + tool)
 
 def _impl(ctx):
     tool_paths = [
@@ -17,20 +16,13 @@ def _impl(ctx):
         wrapper_path(ctx, "strip"),
     ]
 
-    include_flags = [
-        "-isystem",
-        "external/{}/aarch64-none-linux-gnu/include".format(ctx.attr.gcc_repo),
-        "-isystem",
-        "external/{}/lib/gcc/aarch64-none-linux-gnu/{}/include".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-isystem",
-        "external/{}/lib/gcc/aarch64-none-linux-gnu/{}/include-fixed".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-isystem",
-        "external/{}/aarch64-none-linux-gnu/include/c++/{}/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-isystem",
-        "external/{}/aarch64-none-linux-gnu/include/c++/{}/aarch64-none-linux-gnu/".format(ctx.attr.gcc_repo, ctx.attr.gcc_version),
-        "-isystem",
-        "external/{}/aarch64-none-linux-gnu/libc/usr/include/".format(ctx.attr.gcc_repo),
-    ]
+    include_flags = []
+    for path in ctx.attr.include_paths:
+        include_flags.append("-isystem")
+        if path.startswith("external"):
+            include_flags.append(path)
+        else:
+            include_flags.append("external/{}/{}".format(ctx.attr.gcc_repo, path))
 
     linker_flags = [
         "-lstdc++",
@@ -40,6 +32,7 @@ def _impl(ctx):
     opt_feature_flags = [
         "-g0",
         "-O2",
+        "-U_FORTIFY_SOURCE", # Defined by default in Ubuntu gcc, undefine so we can re-define
         "-D_FORTIFY_SOURCE=1",
         "-DNDEBUG",
         "-ffunction-sections",
@@ -140,7 +133,7 @@ def _impl(ctx):
         ctx = ctx,
         toolchain_identifier = ctx.attr.toolchain_identifier,
         host_system_name = ctx.attr.host_system_name,
-        target_system_name = "aarch64-none-linux-gnu",
+        target_system_name = "aarch64-linux-gnu",
         target_cpu = "aarch64", # target_cpu field is used to construct the _solib path
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
@@ -161,8 +154,8 @@ cc_aarch64_linux_gnu_config = rule(
     attrs = {
         "toolchain_identifier": attr.string(default = ""),
         "host_system_name": attr.string(default = ""),
+        "include_paths": attr.string_list(default = []),
         "wrapper_path": attr.string(default = ""),
-        "wrapper_ext": attr.string(default = ""),
         "gcc_repo": attr.string(default = ""),
         "gcc_version": attr.string(default = ""),
     },
