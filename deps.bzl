@@ -37,7 +37,7 @@ def aarch64_linux_gnu_deps():
         ],
     )
 
-    # For Jetpack 6.2:
+    # For Jetpack 6.2 cross compile:
     http_archive(
         name = "linux-libc-5.15.0-aarch64-cross",
 	build_file = "@aarch64_linux_gnu//toolchain:linux-libc.BUILD",
@@ -48,7 +48,7 @@ def aarch64_linux_gnu_deps():
         ],
     )
 
-    # For Jetpack 5.1.2:
+    # For Jetpack 5.1.2 cross compile:
     http_archive(
         name = "linux-libc-5.4.0-aarch64-cross",
 	build_file = "@aarch64_linux_gnu//toolchain:linux-libc.BUILD",
@@ -70,7 +70,7 @@ def aarch64_linux_gnu_deps():
 	],
     )
 
-    # For aarch64 host builds:
+    # For aarch64 host and native jp62 builds:
     http_archive(
 	name = "linux-libc-5.15.0-aarch64",
 	build_file = "@aarch64_linux_gnu//toolchain:linux-libc.BUILD",
@@ -81,10 +81,26 @@ def aarch64_linux_gnu_deps():
 	],
     )
 
+    # For native jp512 builds:
+    http_archive(
+        name = "linux-libc-5.4.0-aarch64",
+        build_file = "@aarch64_linux_gnu//toolchain:linux-libc.BUILD",
+        sha256 = "446f8b31cc67900efdff29b09f7eb70076ab5e41edcd6d8f8fdb9129cb3a771e",
+        strip_prefix = "linux-libc-dev",
+        urls = [
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/linux-libc-dev_5.4.0-216.236-aarch64.tar.zst",
+        ],
+    )
+
+    # Register the Jatpack toolchains first, so bazel chooses them over the generic toolchains:
     native.register_toolchains(
-        "@aarch64_linux_gnu//toolchain:aarch64_linux_x86_64",
         "@aarch64_linux_gnu//toolchain:jp512_linux_x86_64",
         "@aarch64_linux_gnu//toolchain:jp62_linux_x86_64",
+        "@aarch64_linux_gnu//toolchain:jp512_linux_aarch64",
+    )
+
+    native.register_toolchains(
+        "@aarch64_linux_gnu//toolchain:aarch64_linux_x86_64",
         "@aarch64_linux_gnu//toolchain:native_linux_aarch64",
         "@aarch64_linux_gnu//toolchain:native_linux_x86_64",
     )

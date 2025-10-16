@@ -30,12 +30,6 @@ constraint_value(
     visibility = ["//visibility:public"],
 )
 
-constraint_value(
-    name = "generic",
-    constraint_setting = ":nvidia_platform",
-    visibility = ["//visibility:public"],
-)
-
 platform(
     name = "tegra_jetpack_512",
     constraint_values = [
