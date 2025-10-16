@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+
+./external/ubuntu-22.04-x86_64-native/usr/bin/x86_64-linux-gnu-objdump "$@"

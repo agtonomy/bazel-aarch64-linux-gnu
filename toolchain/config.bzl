@@ -133,8 +133,8 @@ def _impl(ctx):
         ctx = ctx,
         toolchain_identifier = ctx.attr.toolchain_identifier,
         host_system_name = ctx.attr.host_system_name,
-        target_system_name = "aarch64-linux-gnu",
-        target_cpu = "aarch64", # target_cpu field is used to construct the _solib path
+        target_system_name = ctx.attr.host_system_name,
+        target_cpu = ctx.attr.target_system_name, # target_cpu field is used to construct the _solib path
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
         abi_version = "gnu",
@@ -149,11 +149,13 @@ def _impl(ctx):
         ],
     )
 
-cc_aarch64_linux_gnu_config = rule(
+cc_linux_gnu_config = rule(
     implementation = _impl,
     attrs = {
         "toolchain_identifier": attr.string(default = ""),
         "host_system_name": attr.string(default = ""),
+        "target_system_name": attr.string(default = "aarch-linux-gnu"),
+        "target_cpu": attr.string(default = "aarch64"), # Used to construct _solib path
         "include_paths": attr.string_list(default = []),
         "wrapper_path": attr.string(default = ""),
         "gcc_repo": attr.string(default = ""),

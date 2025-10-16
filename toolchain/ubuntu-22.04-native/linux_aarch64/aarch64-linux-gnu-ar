@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+
+./external/ubuntu-22.04-aarch64-native/usr/bin/aarch64-linux-gnu-gcc-ar-11 "$@"

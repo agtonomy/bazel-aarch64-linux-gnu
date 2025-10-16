@@ -1,4 +1,4 @@
-load("@aarch64_linux_gnu//toolchain:config.bzl", "cc_aarch64_linux_gnu_config")
+load("@aarch64_linux_gnu//toolchain:config.bzl", "cc_linux_gnu_config")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -90,7 +90,7 @@ filegroup(
 filegroup(
     name = "jp62_compiler_pieces",
     srcs = [
-        "@linux-libc-5.15.0//:headers",
+        "@linux-libc-5.15.0-aarch64-cross//:headers",
         "@{}//:compiler_pieces".format(compiler),
     ],
 )
@@ -123,12 +123,12 @@ filegroup(
 filegroup(
     name = "jp512_compiler_pieces",
     srcs = [
-        "@linux-libc-5.4.0//:headers",
+        "@linux-libc-5.4.0-aarch64-cross//:headers",
         "@{}//:compiler_pieces".format(compiler),
     ],
 )
 
-cc_aarch64_linux_gnu_config(
+cc_linux_gnu_config(
     name = "jp62_config",
     gcc_repo = compiler,
     gcc_version = "11",
@@ -138,13 +138,13 @@ cc_aarch64_linux_gnu_config(
         "usr/aarch64-linux-gnu/include/c++/11/",
         "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
-        "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.15.0"),
+        "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.15.0-aarch64-cross"),
     ],
     toolchain_identifier = "ubuntu-22.04-arm64-cross",
     wrapper_path = "ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-",
 )
 
-cc_aarch64_linux_gnu_config(
+cc_linux_gnu_config(
     name = "jp512_config",
     gcc_repo = compiler,
     gcc_version = "11",
@@ -154,7 +154,7 @@ cc_aarch64_linux_gnu_config(
         "usr/aarch64-linux-gnu/include/c++/11/",
         "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
-        "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.4.0"),
+        "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.4.0-aarch64-cross"),
     ],
     toolchain_identifier = "ubuntu-22.04-arm64-cross",
     wrapper_path = "ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-",

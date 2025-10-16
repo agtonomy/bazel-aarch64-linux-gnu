@@ -1,47 +1,6 @@
 # toolchains/BUILD.bazel
 
 load("@rules_cc//cc:defs.bzl", "cc_toolchain")
-load(":config.bzl", "cc_aarch64_linux_gnu_config")
-
-filegroup(
-    name = "generic_all_files",
-    srcs = [
-        ":generic_compiler_files",
-        ":generic_linker_files",
-        "//toolchain/aarch64-none-linux-gnu/linux_x86_64:ar_files",
-    ]
-)
-
-filegroup(
-    name = "generic_compiler_files",
-    srcs = [
-        "//toolchain/aarch64-none-linux-gnu/linux_x86_64:compiler_files",
-        "@aarch64_linux_gnu_linux_x86_64//:generic_compiler_pieces",
-    ],
-)
-
-filegroup(
-    name = "generic_linker_files",
-    srcs = [
-        "//toolchain/aarch64-none-linux-gnu/linux_x86_64:linker_files",
-        "@aarch64_linux_gnu_linux_x86_64//:generic_compiler_pieces",
-    ],
-)
-
-# Generic ARM64 on X86_64 Cross Compile Toolchain
-cc_toolchain(
-    name = "cc_toolchain_linux_x86_64",
-    all_files = ":generic_all_files",
-    ar_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:ar_files",
-    compiler_files = ":generic_compiler_files",
-    dwp_files = ":empty",
-    linker_files = ":generic_linker_files",
-    objcopy_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:objcopy_files",
-    strip_files = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:strip_files",
-    supports_param_files = 0,
-    toolchain_config = "//toolchain/aarch64-none-linux-gnu/linux_x86_64:config",
-    toolchain_identifier = "aarch64_linux_gnu_linux_x86_64",
-)
 
 # Ubuntu 22.04 gcc 11 ARM64 on x86_64 Cross Compile Toolchain
 cc_toolchain(
@@ -134,5 +93,63 @@ toolchain(
         "//platforms:generic",
    ],
     toolchain = ":aarch64_gcc-11_linux_x86_64",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+# Ubuntu 22.04 gcc 11 aarch64 Native Toolchain
+cc_toolchain(
+    name = "gcc-11_linux_aarch64",
+    all_files = "//toolchain/ubuntu-22.04-native/linux_aarch64:aarch64_all_files",
+    ar_files = "//toolchain/ubuntu-22.04-native/linux_aarch64:ar_files",
+    compiler_files = "//toolchain/ubuntu-22.04-native/linux_aarch64:aarch64_compiler_files",
+    dwp_files = ":empty",
+    linker_files = "//toolchain/ubuntu-22.04-native/linux_aarch64:aarch64_linker_files",
+    objcopy_files = "//toolchain/ubuntu-22.04-native/linux_aarch64:objcopy_files",
+    strip_files = "//toolchain/ubuntu-22.04-native/linux_aarch64:strip_files",
+    supports_param_files = 0,
+    toolchain_config = "//toolchain/ubuntu-22.04-native/linux_aarch64:aarch64_config",
+    toolchain_identifier = "linux_aarch64",
+)
+
+toolchain(
+    name = "native_linux_aarch64",
+    exec_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+   ],
+    toolchain = ":gcc-11_linux_aarch64",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+# Ubuntu 22.04 gcc 11 x86_64 Native Toolchain
+cc_toolchain(
+    name = "gcc-11_linux_x86_64",
+    all_files = "//toolchain/ubuntu-22.04-native/linux_x86_64:x86_64_all_files",
+    ar_files = "//toolchain/ubuntu-22.04-native/linux_x86_64:ar_files",
+    compiler_files = "//toolchain/ubuntu-22.04-native/linux_x86_64:x86_64_compiler_files",
+    dwp_files = ":empty",
+    linker_files = "//toolchain/ubuntu-22.04-native/linux_x86_64:x86_64_linker_files",
+    objcopy_files = "//toolchain/ubuntu-22.04-native/linux_x86_64:objcopy_files",
+    strip_files = "//toolchain/ubuntu-22.04-native/linux_x86_64:strip_files",
+    supports_param_files = 0,
+    toolchain_config = "//toolchain/ubuntu-22.04-native/linux_x86_64:x86_64_config",
+    toolchain_identifier = "linux_x86_64",
+)
+
+toolchain(
+    name = "native_linux_x86_64",
+    exec_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+   ],
+    toolchain = ":gcc-11_linux_x86_64",
     toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )

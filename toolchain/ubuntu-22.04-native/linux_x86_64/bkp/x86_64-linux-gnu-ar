@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+# Required so the host binaries can find shared libraries they need:
+host_lib_path="$(find -L . -name 'libopcodes*.so' -printf "%h\n" | head -n1)"
+[ "$host_lib_path" ] && export LD_LIBRARY_PATH="$host_lib_path"
+
+./external/ubuntu-22.04-arm64-cross/usr/bin/aarch64-linux-gnu-ar "$@"
