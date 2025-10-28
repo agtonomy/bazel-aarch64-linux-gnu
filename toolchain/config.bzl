@@ -27,12 +27,13 @@ def _impl(ctx):
     linker_flags = [
         "-lstdc++",
         "-lm",
+        "-fuse-ld=gold", # Required for supports_start_end_lib_feature
     ]
 
     opt_feature_flags = [
         "-g0",
         "-O2",
-        "-U_FORTIFY_SOURCE", # Defined by default in Ubuntu gcc, undefine so we can re-define
+        "-U_FORTIFY_SOURCE",  # Defined by default in Ubuntu gcc, undefine so we can re-define
         "-D_FORTIFY_SOURCE=1",
         "-DNDEBUG",
         "-ffunction-sections",
@@ -106,6 +107,30 @@ def _impl(ctx):
         ),
     )
 
+    # Copied from the auto-configured @local_config_cc//:local toolchain, they're
+    # intended to make C++ builds deterministic:
+    unfiltered_compile_flags = [
+        "-Wno-builtin-macro-redefined",
+        "-D__DATE__=\"redacted\"",
+        "-D__TIMESTAMP__=\"redacted\"",
+        "-D__TIME__=\"redacted\"",
+    ]
+
+    unfiltered_compile_flags_feature = feature(
+        name = "unfiltered_compile_flags",
+        enabled = True,
+        flag_sets = [
+            flag_set(
+                actions = all_compile_actions,
+                flag_groups = ([
+                    flag_group(
+                        flags = unfiltered_compile_flags,
+                    ),
+                ]),
+            ),
+        ],
+    )
+
     toolchain_compiler_flags = feature(
         name = "compiler_flags",
         enabled = True,
@@ -129,12 +154,22 @@ def _impl(ctx):
         ],
     )
 
+    supports_pic_feature = feature(
+        name = "supports_pic",
+        enabled = True,
+    )
+
+    supports_start_end_lib_feature = feature(
+        name = "supports_start_end_lib",
+        enabled = True,
+    )
+
     return cc_common.create_cc_toolchain_config_info(
         ctx = ctx,
         toolchain_identifier = ctx.attr.toolchain_identifier,
         host_system_name = ctx.attr.host_system_name,
         target_system_name = ctx.attr.target_system_name,
-        target_cpu = ctx.attr.target_cpu, # target_cpu field is used to construct the _solib path
+        target_cpu = ctx.attr.target_cpu,  # target_cpu field is used to construct the _solib path
         target_libc = "gcc",
         compiler = ctx.attr.gcc_repo,
         abi_version = "gnu",
@@ -146,6 +181,9 @@ def _impl(ctx):
             fastbuild_feature,
             toolchain_compiler_flags,
             toolchain_linker_flags,
+            supports_pic_feature,  # Allows bazel to choose when to add -fPIC, needed for python bindings
+            supports_start_end_lib_feature,  # Faster builds by linking .o files rather than building static libraries
+            unfiltered_compile_flags_feature,
         ],
     )
 
@@ -155,7 +193,7 @@ cc_linux_gnu_config = rule(
         "toolchain_identifier": attr.string(default = ""),
         "host_system_name": attr.string(default = ""),
         "target_system_name": attr.string(default = "aarch64-linux-gnu"),
-        "target_cpu": attr.string(default = "aarch64"), # Used to construct _solib path
+        "target_cpu": attr.string(default = "aarch64"),  # Used to construct _solib path
         "include_paths": attr.string_list(default = []),
         "wrapper_path": attr.string(default = ""),
         "gcc_repo": attr.string(default = ""),
