@@ -30,6 +30,11 @@ def _impl(ctx):
         "-fuse-ld=gold", # Required for supports_start_end_lib_feature
     ]
 
+    if ctx.attr.target_cpu == "aarch64":
+        # Required when using -fuse-ld=gold, to avoid:
+        # https://stackoverflow.com/questions/77239349/internal-error-in-gold-happens-sporadically
+        linker_flags.append("-Wl,--no-fix-cortex-a53-843419")
+
     opt_feature_flags = [
         "-g0",
         "-O2",
