@@ -17,7 +17,8 @@ cc_toolchain(
     toolchain_identifier = "jp62_linux_x86_64",
 )
 
-# Same definitions as aarch64_gcc-11_linux_x86_64, but creates a distinct target
+# Same definitions as aarch64_gcc-11_linux_x86_64, but creates a distinct target,
+# to make the output of bazel --toolchain_resolution_debug clearer:
 cc_toolchain(
     name = "jp62_aarch64_gcc-11_linux_x86_64",
     all_files = "//toolchain/ubuntu-22.04-arm64-cross/linux_x86_64:jp62_all_files",

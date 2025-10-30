@@ -1,11 +1,15 @@
 # bazel-aarch64-linux-gnu
-This repo provides a Bazel cross toolchain for x86_64/Linux host and aarch64/Linux target
+This repo provides a Bazel cross toolchain for x86_64/Linux host and aarch64/Linux
+target, plus native toolchains for x86_64/Linux and aarch64/Linux.
 
 The structure was inspired by: https://asnaghi.me/post/embedded-bazel/,
 then re-worked to support bazel CC toolchain auto-resolution / platforms.
 
 ## Toolchain
-The toolchain implemented is: gcc-11-aarch64-linux-gnu_11.4.0, from Ubuntu 22.04
+The toolchain implemented is: gcc / 11.4.0, from Ubuntu 22.04, in three configurations:
+ - cross build for aarch64 target on x86_64 host
+ - native build for aarch64
+ - native build for x86_64
 
 The toolchain is split into two packages, one with almost everything needed to compile,
 the other with linux-libc headers, which need to match the target platform's kernel.
@@ -23,6 +27,9 @@ The main package contains (tarred from / in their original install paths):
  - binutils
 
 ## Usage
+
+Tested with Bazel version 6.5.0, though older versions should be compatible as well.
+
 Include the following in your `WORKSPACE` with appropriate commit and sha256sum
 
 ```python
