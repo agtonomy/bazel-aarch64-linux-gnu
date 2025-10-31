@@ -2,6 +2,10 @@
 # automatically resolve a toolchain if all contraints for the target platform
 # match, including our contraints for jetpack and nvidia
 
+# Define all of the platform constraints here because bazel will only
+# automatically resolve a toolchain if all contraints for the target platform
+# match, including our custom contraints for jetpack and nvidia
+
 package(default_visibility = ["//visibility:public"])
 
 constraint_setting(name = "jetpack_version")
@@ -44,6 +48,16 @@ platform(
         "@platforms//cpu:arm64",
         ":jetpack_62",
         ":tegra",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+platform(
+    name = "aarch64_generic",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+        ":generic",
     ],
     visibility = ["//visibility:public"],
 )

@@ -1,0 +1,40 @@
+Ubuntu toolchains are designed primarily for use by Ubuntu packagers,
+which has a couple side-effects which make them hard to integrate with bazel.
+
+The correct solution is to just pick (or build) a different toolchain.
+
+There are a few major issues to work around, both handled by:
+`toolchain/ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-gcc`
+
+1. Ubuntu gcc/ld adds the `-as-needed` flag by default, which causes ld to only
+    directly link to shared objects with symbols referenced by the binary being
+    linked, which means that bazel's rpath entries in the binary's ELF header
+    aren't used to look up shared libraries which are linked indirectly through
+    other libraries. Bazel does not have a good way to add the `--no-as-needed`
+    flag in a clean way (https://github.com/bazelbuild/bazel/issues/16222),
+    so we do it in a not-clean way, adding `-Wl,--no-as-needed` before `"$@"`
+    in the wrapper script.
+2. Ubuntu's multilib gcc build interferes in some way with ld's ability to find
+    the sysroot in a way bazel can work with, in part or in whole due to some
+    issue with symlinks. There's a sort-of-functional way to specify a sysroot
+    in the bazel cc toolchain config, but there's no way to determine that path
+    dymanically in the correct scope without symlinks, the only way it works is
+    with a hard-coded path that is not at all portable. The workaround is to
+    use `find` to discover the path from the execroot (this is the working
+    directory when the `aarch64-linux-gnu-gcc` is executed,) which is not, itself,
+    a symlink, but its parent directory is, so run `realpath` on the output of
+    `dirname` and then append `/../../../` to remove the
+    `usr/aarch64-linux-gnu/lib` prefix and get to the root, then add that path
+    variable with `--sysroot` at the end of the `gcc` command, to override anything
+    bazel might set. This path could be hard-coded in the wrapper script to eliminate
+    several process spawns per gcc call, but that's less flexible.
+3. Ubuntu's compiler binaries aren't statically linked and require a few shared
+    libraries from the bundle to execute on the host, which they don't seem to
+    be able to just pick up from the bazel sandbox enviroment, so use `find` to
+    set and export `$LD_LIBRARY_PATH`. This is also added to
+    `aarch64-linux-gnu-ar`.
+
+Minor issues:
+1. Ubuntu gcc defaults to defining `-D_FORTIFY_SOURCE` so when we add our setting
+    to the `feature_flags` in `toolchain/config.bzl` that's an error, to fix this
+    add `-U_FORTIFY_SOURCE` immediately before `-D_FORTIFY_SOURCE=1`

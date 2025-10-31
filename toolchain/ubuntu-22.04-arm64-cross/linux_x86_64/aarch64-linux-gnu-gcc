@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+
+# Required so the host binaries can find shared libraries they need:
+host_lib_path="$(find -L . -name 'libopcodes*.so' -printf "%h\n" | head -n1)"
+[ "$host_lib_path" ] && export LD_LIBRARY_PATH="$host_lib_path"
+
+# ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's
+# sandbox symlinks, so resolve the actual path where libraries reside:
+libc_realpath="$(realpath "$(find . -name libc.so.6 | head -n1)")" # This is the actual path to libc
+# Remove the filename and usr/aarch64-linux-gnu/lib to get the sysroot:
+sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
+
+# Due to https://github.com/bazelbuild/bazel/issues/16222 this is the only spot we can add
+# the --no-as-needed ld flag to make the final binary list every shared library provided on
+# the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
+# to find those libraries:
+
+./external/ubuntu-22.04-arm64-cross/usr/bin/aarch64-linux-gnu-gcc-11 -Wl,--no-as-needed "$@" --sysroot="$sysroot" 
