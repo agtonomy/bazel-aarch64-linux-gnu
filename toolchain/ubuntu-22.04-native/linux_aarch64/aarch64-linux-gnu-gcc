@@ -4,7 +4,7 @@ set -euo pipefail
 # tolerate running under both bazel build and run
 search_base='./external/ubuntu-22.04-aarch64-native/'
 if [[ ! -d $search_base ]]; then
-    search_base='.'
+    search_base='./external/'
 fi
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's

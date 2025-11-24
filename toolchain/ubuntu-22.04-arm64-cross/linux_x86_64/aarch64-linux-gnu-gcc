@@ -8,7 +8,7 @@ host_lib_path="$(find -L . -name 'libopcodes*.so' -printf "%h\n" | head -n1)"
 # tolerate running under both bazel build and run
 search_base='./external/ubuntu-22.04-arm64-cross/'
 if [[ ! -d $search_base ]]; then
-    search_base='.'
+    search_base='./external/'
 fi
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's

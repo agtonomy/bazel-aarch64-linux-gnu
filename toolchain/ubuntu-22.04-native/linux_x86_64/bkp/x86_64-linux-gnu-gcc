@@ -4,7 +4,7 @@ set -euo pipefail
 # tolerate running under both bazel build and run
 search_base='./external/ubuntu-22.04-arm64-cross/'
 if [[ ! -d $search_base ]]; then
-    search_base='.'
+    search_base='./external/'
 fi
 
 # Required so the host binaries can find shared libraries they need:
