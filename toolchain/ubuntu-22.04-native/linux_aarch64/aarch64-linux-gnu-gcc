@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
+# Ensure basic shell utilities are available (needed when running under nvcc with stripped PATH)
+export PATH="/bin:$PATH"
+
 # tolerate running under both bazel build and run
 search_base='./external/ubuntu-22.04-aarch64-native/'
 if [[ ! -d $search_base ]]; then
