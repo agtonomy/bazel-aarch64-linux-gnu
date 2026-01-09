@@ -4,10 +4,10 @@ set -euo pipefail
 # Ensure basic shell utilities are available (needed when running under nvcc with stripped PATH)
 export PATH="/bin:$PATH"
 
-# tolerate running under both bazel build and run
 search_base='./external/ubuntu-22.04-aarch64-native/'
 if [[ ! -d $search_base ]]; then
-    search_base='./external/'
+    # If this is `bazel run` or some module uses chdir, locate the search base relative to this script:
+    search_base="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)/../../../../"
 fi
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's
@@ -21,4 +21,4 @@ sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 # the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
 # to find those libraries:
 
-./external/ubuntu-22.04-aarch64-native/usr/bin/aarch64-linux-gnu-gcc-11 -Wl,--no-as-needed "$@" --sysroot="$sysroot" 
+"$sysroot/usr/bin/aarch64-linux-gnu-gcc-11" -Wl,--no-as-needed "$@" --sysroot="$sysroot"
