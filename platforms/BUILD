@@ -34,7 +34,7 @@ platform(
     name = "tegra_jetpack_512",
     constraint_values = [
         "@platforms//os:linux",
-        "@platforms//cpu:arm64",
+        "@platforms//cpu:aarch64",
         ":jetpack_512",
         ":tegra",
     ],
@@ -45,7 +45,7 @@ platform(
     name = "tegra_jetpack_62",
     constraint_values = [
         "@platforms//os:linux",
-        "@platforms//cpu:arm64",
+        "@platforms//cpu:aarch64",
         ":jetpack_62",
         ":tegra",
     ],
@@ -56,7 +56,7 @@ platform(
     name = "aarch64_generic",
     constraint_values = [
         "@platforms//os:linux",
-        "@platforms//cpu:arm64",
+        "@platforms//cpu:aarch64",
         ":generic",
     ],
     visibility = ["//visibility:public"],
