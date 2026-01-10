@@ -1,0 +1,10 @@
+workspace(name = "toolchain_tests")
+
+local_repository(
+    name = "aarch64_linux_gnu",
+    path = "..",
+)
+
+load("@aarch64_linux_gnu//:deps.bzl", "aarch64_linux_gnu_deps")
+
+aarch64_linux_gnu_deps()

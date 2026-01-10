@@ -30,6 +30,15 @@ constraint_value(
     visibility = ["//visibility:public"],
 )
 
+# Generic platform variant (no Jetpack/Tegra constraints)
+constraint_setting(name = "platform_variant")
+
+constraint_value(
+    name = "generic",
+    constraint_setting = ":platform_variant",
+    visibility = ["//visibility:public"],
+)
+
 platform(
     name = "tegra_jetpack_512",
     constraint_values = [
