@@ -7,4 +7,4 @@ external_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../" && pwd)"
 [ -d "${external_dir}/ubuntu-22.04-x86_64-native/host-libs" ] && \
     export LD_LIBRARY_PATH="${external_dir}/ubuntu-22.04-x86_64-native/host-libs"
 
-exec "${external_dir}/ubuntu-22.04-x86_64-native/usr/bin/x86_64-linux-gnu-ar" "$@"
+exec "${external_dir}/ubuntu-22.04-x86_64-native/usr/bin/x86_64-linux-gnu-gcc-ar-12" "$@"

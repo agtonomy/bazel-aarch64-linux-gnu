@@ -144,12 +144,12 @@ filegroup(
 cc_linux_gnu_config(
     name = "jp62_config",
     gcc_repo = compiler,
-    gcc_version = "11",
+    gcc_version = "12",
     host_system_name = "linux_x86_64",
     include_paths = [
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
-        "usr/aarch64-linux-gnu/include/c++/11/",
-        "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/12/include/",
+        "usr/aarch64-linux-gnu/include/c++/12/",
+        "usr/aarch64-linux-gnu/include/c++/12/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
         "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.15.0-aarch64-cross"),
     ],
@@ -160,12 +160,12 @@ cc_linux_gnu_config(
 cc_linux_gnu_config(
     name = "jp512_config",
     gcc_repo = compiler,
-    gcc_version = "11",
+    gcc_version = "12",
     host_system_name = "linux_x86_64",
     include_paths = [
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
-        "usr/aarch64-linux-gnu/include/c++/11/",
-        "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/12/include/",
+        "usr/aarch64-linux-gnu/include/c++/12/",
+        "usr/aarch64-linux-gnu/include/c++/12/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
         "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.4.0-aarch64-cross"),
     ],

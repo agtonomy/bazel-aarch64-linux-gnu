@@ -82,7 +82,7 @@ filegroup(
         "usr/include/**/*.h",
         "usr/include/*.h",
         "usr/include/c++/**",
-        "usr/lib/gcc/*-linux-gnu/11/include/**/*.h",
+        "usr/lib/gcc/*-linux-gnu/12/include/**/*.h",
     ]),
 )
 
@@ -91,7 +91,7 @@ filegroup(
     srcs = glob([
         "usr/lib/*-linux-gnu/**/*.so*",
         "usr/lib/*-linux-gnu/*.a",
-        "usr/lib/gcc/*-linux-gnu/11/*.a",
+        "usr/lib/gcc/*-linux-gnu/12/*.a",
     ]),
 )
 

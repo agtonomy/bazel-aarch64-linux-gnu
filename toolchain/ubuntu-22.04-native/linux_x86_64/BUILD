@@ -109,13 +109,13 @@ filegroup(
 cc_linux_gnu_config(
     name = "x86_64_config",
     gcc_repo = compiler,
-    gcc_version = "11",
+    gcc_version = "12",
     host_system_name = "linux_x86_64",
     include_paths = [
-        "usr/lib/gcc/x86_64-linux-gnu/11/include/",
+        "usr/lib/gcc/x86_64-linux-gnu/12/include/",
         "usr/include/x86_64-linux-gnu/",
-        "usr/include/c++/11/",
-        "usr/include/x86_64-linux-gnu/c++/11/",
+        "usr/include/c++/12/",
+        "usr/include/x86_64-linux-gnu/c++/12/",
         "usr/include/",
         "external/{}/usr/include/".format("linux-libc-5.15.0-x86_64"),
         "external/{}/usr/include/x86_64-linux-gnu/".format("linux-libc-5.15.0-x86_64"),

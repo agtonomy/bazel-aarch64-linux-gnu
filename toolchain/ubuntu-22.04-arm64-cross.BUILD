@@ -75,7 +75,7 @@ filegroup(
         "usr/aarch64-linux-gnu/include/**/*.h",
         "usr/aarch64-linux-gnu/include/**/*.hpp",
         "usr/aarch64-linux-gnu/include/c++/**",
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/**/*.h",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/12/include/**/*.h",
     ]),
 )
 
@@ -84,8 +84,8 @@ filegroup(
     srcs = glob([
         "usr/aarch64-linux-gnu/lib/**/*.so*",
         "usr/aarch64-linux-gnu/lib/*.a",
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/**/*.so*",
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/*.a",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/12/**/*.so*",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/12/*.a",
     ]),
 )
 

@@ -10,30 +10,30 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "ubuntu-22.04-arm64-cross",
         build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-arm64-cross.BUILD",
-        sha256 = "14d7e4f9cc87a3320033062a6978d848e5702186c9478b73cfb1c03744302b5b",
-        strip_prefix = "ubuntu-22.04-arm64-cross",
+        sha256 = "1b0a46ead17f120c8e6c0933626c32b5f47526c540ff9c1781189f7aa731f61f",
+        strip_prefix = "ubuntu-22.04-arm64-gcc12-cross",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-arm64-cross-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-arm64-gcc12-cross.tar.zst",
         ],
     )
 
     http_archive(
         name = "ubuntu-22.04-aarch64-native",
         build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-native.BUILD",
-        sha256 = "2b009b59377e21581d67b0f5d6f314a0ef2249b1941b4fca03685bfc3facf8de",
-        strip_prefix = "ubuntu-22.04-aarch64-native",
+        sha256 = "b463748abfcf5a6927bf6c5c470c3c5c458c782741bcaa82658dc3d26738a71a",
+        strip_prefix = "ubuntu-22.04-aarch64-gcc12-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-aarch64-native-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-aarch64-gcc12-native.tar.zst",
         ],
     )
 
     http_archive(
         name = "ubuntu-22.04-x86_64-native",
         build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-native.BUILD",
-        sha256 = "342fc43d0fa977edcb4e9d6840a0c289bc09123327eff05c6a399964a0bfaaa2",
-        strip_prefix = "ubuntu-22.04-x86_64-native",
+        sha256 = "b9bb41840546234501891628cbaba148b389ac29b18d65eeff65eb6f088bdc77",
+        strip_prefix = "ubuntu-22.04-x86_64-gcc12-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-x86_64-native-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-x86_64-gcc12-native.tar.zst",
         ],
     )
 

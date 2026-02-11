@@ -25,7 +25,7 @@ export LD_LIBRARY_PATH="${sysroot}/usr/lib/x86_64-linux-gnu"
 # the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
 # to find those libraries:
 
-"$sysroot/usr/bin/aarch64-linux-gnu-gcc-11" \
+"$sysroot/usr/bin/aarch64-linux-gnu-gcc-12" \
     -Wl,--no-as-needed \
     "-B${sysroot}/usr/bin/" \
     "-B${script_dir}/" \

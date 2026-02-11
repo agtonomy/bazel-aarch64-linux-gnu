@@ -26,7 +26,7 @@ sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 sanitizer_rpath=()
 [[ "$*" == *-fsanitize=* ]] && sanitizer_rpath=("-Wl,-rpath,${sysroot}/usr/lib/x86_64-linux-gnu/")
 
-"$sysroot/usr/bin/x86_64-linux-gnu-gcc-11" \
+"$sysroot/usr/bin/x86_64-linux-gnu-gcc-12" \
     -Wl,--no-as-needed \
     "-B${external_dir}/ubuntu-22.04-x86_64-native/usr/bin/" \
     "${sanitizer_rpath[@]}" \

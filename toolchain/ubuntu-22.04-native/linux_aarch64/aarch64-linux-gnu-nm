@@ -2,4 +2,4 @@
 set -euo pipefail
 
 external_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../" && pwd)"
-exec "${external_dir}/ubuntu-22.04-aarch64-native/usr/bin/aarch64-linux-gnu-gcc-nm-11" "$@"
+exec "${external_dir}/ubuntu-22.04-aarch64-native/usr/bin/aarch64-linux-gnu-gcc-nm-12" "$@"

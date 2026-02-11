@@ -144,14 +144,14 @@ filegroup(
 cc_linux_gnu_config(
     name = "aarch64_config",
     gcc_repo = compiler,
-    gcc_version = "11",
+    gcc_version = "12",
     host_system_name = "linux_aarch64",
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
-        "usr/lib/gcc/aarch64-linux-gnu/11/include/",
+        "usr/lib/gcc/aarch64-linux-gnu/12/include/",
         "usr/include/aarch64-linux-gnu/",
-        "usr/include/c++/11/",
-        "usr/include/aarch64-linux-gnu/c++/11/",
+        "usr/include/c++/12/",
+        "usr/include/aarch64-linux-gnu/c++/12/",
         "usr/include/",
         "external/{}/usr/include/".format("linux-libc-5.15.0-aarch64"),
         "external/{}/usr/include/aarch64-linux-gnu/".format("linux-libc-5.15.0-aarch64"),
@@ -163,14 +163,14 @@ cc_linux_gnu_config(
 cc_linux_gnu_config(
     name = "jp512_config",
     gcc_repo = compiler,
-    gcc_version = "11",
+    gcc_version = "12",
     host_system_name = "linux_aarch64",
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
-        "usr/lib/gcc/aarch64-linux-gnu/11/include/",
+        "usr/lib/gcc/aarch64-linux-gnu/12/include/",
         "usr/include/aarch64-linux-gnu/",
-        "usr/include/c++/11/",
-        "usr/include/aarch64-linux-gnu/c++/11/",
+        "usr/include/c++/12/",
+        "usr/include/aarch64-linux-gnu/c++/12/",
         "usr/include/",
         "external/{}/usr/include/".format("linux-libc-5.4.0-aarch64"),
         "external/{}/usr/include/aarch64-linux-gnu/".format("linux-libc-5.4.0-aarch64"),
