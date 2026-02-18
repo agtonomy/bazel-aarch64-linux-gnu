@@ -10,7 +10,7 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "ubuntu-22.04-arm64-cross",
         build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-arm64-cross.BUILD",
-        sha256 = "1b0a46ead17f120c8e6c0933626c32b5f47526c540ff9c1781189f7aa731f61f",
+        sha256 = "0e487b5ddc6b89e56e44539a32ad3244cd77fcf3abc383fd2961ea8b8750d348",
         strip_prefix = "ubuntu-22.04-arm64-gcc12-cross",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-arm64-gcc12-cross.tar.zst",
@@ -20,7 +20,7 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "ubuntu-22.04-aarch64-native",
         build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-native.BUILD",
-        sha256 = "b463748abfcf5a6927bf6c5c470c3c5c458c782741bcaa82658dc3d26738a71a",
+        sha256 = "042c62f44b1de2cb8e2c779d1dd4c4e1998cd2766d3ee4415ba33fa37d434b03",
         strip_prefix = "ubuntu-22.04-aarch64-gcc12-native",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-aarch64-gcc12-native.tar.zst",
@@ -30,7 +30,7 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "ubuntu-22.04-x86_64-native",
         build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-native.BUILD",
-        sha256 = "b9bb41840546234501891628cbaba148b389ac29b18d65eeff65eb6f088bdc77",
+        sha256 = "8b9ede5a86bf6320407dbe9e6c5aff2ab249410d6a73810ce8935c8fa4bba97a",
         strip_prefix = "ubuntu-22.04-x86_64-gcc12-native",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-x86_64-gcc12-native.tar.zst",
