@@ -25,6 +25,8 @@ def _impl(ctx):
         else:
             include_flags.append("external/{}/{}".format(ctx.attr.gcc_repo, path))
 
+    # The -B argument here can be changed to match that in unfiltered_compile_flags once
+    # the toolchain tar includes a symlink from ld.gold to <arch>-linux-gnu-ld.gold.
     # The config rule lives in the same package as the wrapper scripts, so ctx.label
     # gives the execroot-relative path to the wrapper directory directly:
     linker_flags = [
