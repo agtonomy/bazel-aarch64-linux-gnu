@@ -15,9 +15,19 @@ filegroup(
 )
 
 filegroup(
+    name = "as_files",
+    srcs = [
+        "aarch64-linux-gnu-as",
+        "@{}//:as".format(compiler),
+        "@{}//:host_libraries".format(compiler),
+    ],
+)
+
+filegroup(
     name = "compiler_files",
     srcs = [
         "aarch64-linux-gnu-gcc",
+        ":as_files",
         "@{}//:compiler_pieces".format(compiler),
         "@{}//:gcc".format(compiler),
     ],
@@ -28,6 +38,7 @@ filegroup(
     srcs = [
         "aarch64-linux-gnu-gcc",
         "aarch64-linux-gnu-ld",
+        "ld.gold",
         "@{}//:ar".format(compiler),
         "@{}//:compiler_pieces".format(compiler),
         "@{}//:gcc".format(compiler),
@@ -68,7 +79,8 @@ filegroup(
         ":ar_files",
         ":jp62_compiler_files",
         ":jp62_linker_files",
-    ]
+        ":strip_files",
+    ],
 )
 
 filegroup(
@@ -101,7 +113,8 @@ filegroup(
         ":ar_files",
         ":jp512_compiler_files",
         ":jp512_linker_files",
-    ]
+        ":strip_files",
+    ],
 )
 
 filegroup(
