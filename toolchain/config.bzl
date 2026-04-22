@@ -9,6 +9,7 @@ def _impl(ctx):
         wrapper_path(ctx, "gcc"),
         wrapper_path(ctx, "ld"),
         wrapper_path(ctx, "ar"),
+        wrapper_path(ctx, "as"),
         wrapper_path(ctx, "cpp"),
         wrapper_path(ctx, "gcov"),
         wrapper_path(ctx, "nm"),
@@ -24,10 +25,15 @@ def _impl(ctx):
         else:
             include_flags.append("external/{}/{}".format(ctx.attr.gcc_repo, path))
 
+    # The -B argument here can be changed to match that in unfiltered_compile_flags once
+    # the toolchain tar includes a symlink from ld.gold to <arch>-linux-gnu-ld.gold.
+    # The config rule lives in the same package as the wrapper scripts, so ctx.label
+    # gives the execroot-relative path to the wrapper directory directly:
     linker_flags = [
+        "-B{}/{}/".format(ctx.label.workspace_root, ctx.label.package),
         "-lstdc++",
         "-lm",
-        "-fuse-ld=gold", # Required for supports_start_end_lib_feature
+        "-fuse-ld=gold",  # Required for supports_start_end_lib_feature
     ]
 
     if ctx.attr.target_cpu == "aarch64":
@@ -120,6 +126,9 @@ def _impl(ctx):
         "-D__TIMESTAMP__=\"redacted\"",
         "-D__TIME__=\"redacted\"",
     ]
+
+    # Tell gcc to look up subprograms like as in the extracted toolchain tar path
+    unfiltered_compile_flags.append("-Bexternal/{}/usr/bin/".format(ctx.attr.gcc_repo))
 
     unfiltered_compile_flags_feature = feature(
         name = "unfiltered_compile_flags",

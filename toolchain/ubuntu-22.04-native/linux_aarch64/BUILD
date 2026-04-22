@@ -15,9 +15,18 @@ filegroup(
 )
 
 filegroup(
+    name = "as_files",
+    srcs = [
+        "aarch64-linux-gnu-as",
+        "@{}//:as".format(compiler),
+    ],
+)
+
+filegroup(
     name = "compiler_files",
     srcs = [
         "aarch64-linux-gnu-gcc",
+        ":as_files",
         "@{}//:compiler_pieces".format(compiler),
         "@{}//:gcc".format(compiler),
     ],
@@ -28,6 +37,7 @@ filegroup(
     srcs = [
         "aarch64-linux-gnu-gcc",
         "aarch64-linux-gnu-ld",
+        "ld.gold",
         "@{}//:ar".format(compiler),
         "@{}//:compiler_pieces".format(compiler),
         "@{}//:gcc".format(compiler),
@@ -62,17 +72,18 @@ filegroup(
 filegroup(
     name = "aarch64_all_files",
     srcs = [
-        ":ar_files",
         ":aarch64_compiler_files",
         ":aarch64_linker_files",
-    ]
+        ":ar_files",
+        ":strip_files",
+    ],
 )
 
 filegroup(
     name = "aarch64_compiler_files",
     srcs = [
-        ":compiler_files",
         ":aarch64_compiler_pieces",
+        ":compiler_files",
     ],
 )
 
@@ -99,7 +110,8 @@ filegroup(
         ":ar_files",
         ":jp512_compiler_files",
         ":jp512_linker_files",
-    ]
+        ":strip_files",
+    ],
 )
 
 filegroup(
@@ -131,7 +143,8 @@ cc_linux_gnu_config(
     gcc_repo = compiler,
     gcc_version = "11",
     host_system_name = "linux_aarch64",
-    include_paths = [ # Path order is important to avoid bazel errors about undeclared files:
+    include_paths = [
+        # Path order is important to avoid bazel errors about undeclared files:
         "usr/lib/gcc/aarch64-linux-gnu/11/include/",
         "usr/include/aarch64-linux-gnu/",
         "usr/include/c++/11/",
@@ -149,7 +162,8 @@ cc_linux_gnu_config(
     gcc_repo = compiler,
     gcc_version = "11",
     host_system_name = "linux_aarch64",
-    include_paths = [ # Path order is important to avoid bazel errors about undeclared files:
+    include_paths = [
+        # Path order is important to avoid bazel errors about undeclared files:
         "usr/lib/gcc/aarch64-linux-gnu/11/include/",
         "usr/include/aarch64-linux-gnu/",
         "usr/include/c++/11/",
