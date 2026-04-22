@@ -1,0 +1,10 @@
+# Enable CC toolchain resolution (required for platform-based toolchain selection)
+build --incompatible_enable_cc_toolchain_resolution
+
+# Platform configurations
+build:aarch64 --platforms=@aarch64_linux_gnu//platforms:aarch64_generic
+build:jetpack_512 --platforms=@aarch64_linux_gnu//platforms:tegra_jetpack_512
+build:jetpack_62 --platforms=@aarch64_linux_gnu//platforms:tegra_jetpack_62
+
+# Show verbose failures for debugging
+build --verbose_failures

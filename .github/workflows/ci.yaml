@@ -1,0 +1,155 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cross-compile:
+    name: Cross-compile (x86_64 -> aarch64)
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}-cross
+          repository-cache: true
+
+      - name: Install QEMU
+        run: sudo apt-get update && sudo apt-get install -y qemu-user-static
+
+      - name: Build (generic aarch64)
+        working-directory: tests
+        run: bazel build //:all --config=aarch64
+
+      - name: Verify binaries (generic aarch64)
+        working-directory: tests
+        run: |
+          ./verify_binary.sh bazel-bin/hello_c aarch64
+          ./verify_binary.sh bazel-bin/hello_cc aarch64
+
+      - name: Run under QEMU (generic aarch64)
+        working-directory: tests
+        run: |
+          SYSROOT=$(bazel info output_base)/external/ubuntu-22.04-arm64-cross/usr/aarch64-linux-gnu
+          qemu-aarch64-static -L $SYSROOT bazel-bin/hello_c
+          qemu-aarch64-static -L $SYSROOT bazel-bin/hello_cc
+
+      - name: Build (Jetpack 5.1.2)
+        working-directory: tests
+        run: bazel build //:all --config=jetpack_512
+
+      - name: Verify binaries (Jetpack 5.1.2)
+        working-directory: tests
+        run: |
+          ./verify_binary.sh bazel-bin/hello_c aarch64
+          ./verify_binary.sh bazel-bin/hello_cc aarch64
+
+      - name: Build (Jetpack 6.2)
+        working-directory: tests
+        run: bazel build //:all --config=jetpack_62
+
+      - name: Verify binaries (Jetpack 6.2)
+        working-directory: tests
+        run: |
+          ./verify_binary.sh bazel-bin/hello_c aarch64
+          ./verify_binary.sh bazel-bin/hello_cc aarch64
+
+  native-x86_64:
+    name: Native x86_64
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}-x86
+          repository-cache: true
+
+      - name: Build
+        working-directory: tests
+        run: bazel build //:all
+
+      - name: Verify binaries
+        working-directory: tests
+        run: |
+          ./verify_binary.sh bazel-bin/hello_c x86_64
+          ./verify_binary.sh bazel-bin/hello_cc x86_64
+
+      - name: Run binaries
+        working-directory: tests
+        run: |
+          bazel-bin/hello_c
+          bazel-bin/hello_cc
+
+  native-arm64:
+    name: Native ARM64
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}-arm64
+          repository-cache: true
+
+      - name: Build
+        working-directory: tests
+        run: bazel build //:all
+
+      - name: Verify binaries
+        working-directory: tests
+        run: |
+          ./verify_binary.sh bazel-bin/hello_c aarch64
+          ./verify_binary.sh bazel-bin/hello_cc aarch64
+
+      - name: Run binaries
+        working-directory: tests
+        run: |
+          bazel-bin/hello_c
+          bazel-bin/hello_cc
+
+  ci-ok:
+    name: CI OK
+    runs-on: ubuntu-slim
+    needs:
+      - cross-compile
+      - native-x86_64
+      - native-arm64
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const needs = ${{ toJSON(needs) }};
+            const failures = Object.entries(needs)
+              .filter(([name, job]) => job.result === 'failure')
+              .map(([name]) => name);
+
+            if (failures.length > 0) {
+              core.setFailed(`The following jobs failed: ${failures.join(', ')}`);
+            } else {
+              core.info('All checks passed or were skipped');
+            }
