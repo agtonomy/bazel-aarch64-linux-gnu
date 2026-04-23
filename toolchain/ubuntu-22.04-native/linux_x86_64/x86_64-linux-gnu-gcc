@@ -1,15 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-search_base='./external/ubuntu-22.04-x86_64-native/'
-if [[ ! -d $search_base ]]; then
-    # If this is `bazel run` or some module uses chdir, locate the search base relative to this script:
-    search_base="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)/../../../../"
-fi
+# Always resolve from script location so paths work when a caller (e.g. rules_go) chdirs:
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+external_dir="$(cd "${script_dir}/../../../../" && pwd)"
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's
 # sandbox symlinks, so resolve the actual path where libraries reside:
-libc_realpath="$(realpath "$(find -L "$search_base" -name libc.so.6 | head -n1)")" # This is the actual path to libc
+libc_realpath="$(realpath "$(find -L "${external_dir}/ubuntu-22.04-x86_64-native/" -name libc.so.6 | head -n1)")" # This is the actual path to libc
 # Remove the filename and usr/x86_64-linux-gnu/lib to get the sysroot:
 sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 
@@ -18,4 +16,8 @@ sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 # the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
 # to find those libraries:
 
-"$sysroot/usr/bin/x86_64-linux-gnu-gcc-11" -Wl,--no-as-needed "$@" --sysroot="$sysroot"
+"$sysroot/usr/bin/x86_64-linux-gnu-gcc-11" \
+    -Wl,--no-as-needed \
+    "-B${external_dir}/ubuntu-22.04-x86_64-native/usr/bin/" \
+    "-B${script_dir}/" \
+    "$@" --sysroot="$sysroot"

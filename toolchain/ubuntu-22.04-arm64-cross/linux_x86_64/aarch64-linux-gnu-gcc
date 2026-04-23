@@ -5,15 +5,12 @@ set -euo pipefail
 export PATH="/bin:$PATH"
 
 
-search_base='./external/ubuntu-22.04-arm64-cross/'
-if [[ ! -d "$search_base" ]]; then
-    # If this is `bazel run` or some module uses chdir, locate the search base relative to this script:
-    search_base="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)/../../../../"
-fi
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+external_dir="$(cd "${script_dir}/../../../../" && pwd)"
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's
 # sandbox symlinks, so resolve the actual path where libraries reside:
-libc_realpath="$(realpath "$(find "$search_base" -name libc.so.6 | head -n1)")" # This is the actual path to libc
+libc_realpath="$(realpath "$(find "${external_dir}/ubuntu-22.04-arm64-cross/" -name libc.so.6 | head -n1)")" # This is the actual path to libc
 # Remove the filename and usr/aarch64-linux-gnu/lib to get the sysroot:
 sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 
@@ -26,4 +23,8 @@ host_lib_path="$(find -L "$sysroot" -name 'libopcodes*.so' -printf "%h\n" | head
 # the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
 # to find those libraries:
 
-"$sysroot/usr/bin/aarch64-linux-gnu-gcc-11" -Wl,--no-as-needed "$@" --sysroot="$sysroot"
+"$sysroot/usr/bin/aarch64-linux-gnu-gcc-11" \
+    -Wl,--no-as-needed \
+    "-B${sysroot}/usr/bin/" \
+    "-B${script_dir}/" \
+    "$@" --sysroot="$sysroot"
