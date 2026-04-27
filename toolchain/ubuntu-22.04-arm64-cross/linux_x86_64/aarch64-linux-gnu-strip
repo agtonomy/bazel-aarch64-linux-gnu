@@ -1,4 +1,5 @@
 #!/bin/bash
 set -euo pipefail
 
-./external/ubuntu-22.04-arm64-cross/usr/bin/aarch64-linux-gnu-strip "$@"
+external_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../" && pwd)"
+exec "${external_dir}/ubuntu-22.04-arm64-cross/usr/bin/aarch64-linux-gnu-strip" "$@"

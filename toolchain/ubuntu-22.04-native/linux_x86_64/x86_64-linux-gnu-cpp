@@ -1,4 +1,5 @@
 #!/bin/bash
 set -euo pipefail
 
-./external/ubuntu-22.04-x86_64-native/usr/bin/x86_64-linux-gnu-cpp-11 "$@"
+external_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../" && pwd)"
+exec "${external_dir}/ubuntu-22.04-x86_64-native/usr/bin/x86_64-linux-gnu-cpp-11" "$@"
