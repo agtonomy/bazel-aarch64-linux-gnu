@@ -19,8 +19,12 @@ sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 # the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
 # to find those libraries:
 
+sanitizer_rpath=()
+[[ "$*" == *-fsanitize=* ]] && sanitizer_rpath=("-Wl,-rpath,${sysroot}/usr/lib/aarch64-linux-gnu/")
+
 "$sysroot/usr/bin/aarch64-linux-gnu-gcc-11" \
     -Wl,--no-as-needed \
     "-B${external_dir}/ubuntu-22.04-aarch64-native/usr/bin/" \
+    "${sanitizer_rpath[@]}" \
     "-B${script_dir}/" \
     "$@" --sysroot="$sysroot"
