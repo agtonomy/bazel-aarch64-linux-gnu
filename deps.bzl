@@ -13,7 +13,7 @@ def aarch64_linux_gnu_deps():
         sha256 = "f2cca1cb85f239ec48a20ebefa7868ca79d83bd12489f3ebdbcd48d583cfb5d5",
         strip_prefix = "ubuntu-22.04-arm64-cross",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-arm64-cross-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-arm64-cross-2.tar.zst",
         ],
     )
 
@@ -23,7 +23,7 @@ def aarch64_linux_gnu_deps():
         sha256 = "2b009b59377e21581d67b0f5d6f314a0ef2249b1941b4fca03685bfc3facf8de",
         strip_prefix = "ubuntu-22.04-aarch64-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-aarch64-native-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-aarch64-native-2.tar.zst",
         ],
     )
 
@@ -33,7 +33,7 @@ def aarch64_linux_gnu_deps():
         sha256 = "342fc43d0fa977edcb4e9d6840a0c289bc09123327eff05c6a399964a0bfaaa2",
         strip_prefix = "ubuntu-22.04-x86_64-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-x86_64-native-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-x86_64-native-2.tar.zst",
         ],
     )
 
