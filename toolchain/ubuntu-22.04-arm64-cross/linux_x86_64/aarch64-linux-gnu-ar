@@ -3,15 +3,10 @@ set -euo pipefail
 
 external_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../" && pwd)"
 
-libc_realpath="$(realpath "$(find "${external_dir}/ubuntu-22.04-arm64-cross/" -name libc.so.6 | head -n1)")" # This is the actual path to libc
-# Remove the filename and usr/aarch64-linux-gnu/lib to get the sysroot:
-sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
-
 # Required so the host binaries can find shared libraries they need.
 # Include usr/lib/x86_64-linux-gnu/ alongside host-libs/: the cross packages deposit
 # x86_64 runtime libs there, and unlike the native archives this path has no x86_64
 # libc.so.6, so there is no glibc version mixing risk.
-[ -d "${sysroot}/host-libs" ] && \
-    export LD_LIBRARY_PATH="${sysroot}/host-libs:${sysroot}/usr/lib/x86_64-linux-gnu"
+export LD_LIBRARY_PATH="${external_dir}/ubuntu-22.04-arm64-cross/host-libs:${external_dir}/ubuntu-22.04-arm64-cross/usr/lib/x86_64-linux-gnu"
 
 exec "${external_dir}/ubuntu-22.04-arm64-cross/usr/bin/aarch64-linux-gnu-ar" "$@"

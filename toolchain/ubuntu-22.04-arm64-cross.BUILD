@@ -93,7 +93,10 @@ filegroup(
 # on the host system:
 filegroup(
     name = "host_libraries",
-    srcs = glob(["usr/lib/x86_64-linux-gnu/*"]),
+    srcs = glob([
+        "host-libs/**",
+        "usr/lib/x86_64-linux-gnu/*",
+    ]),
 )
 
 # collection of executables.
