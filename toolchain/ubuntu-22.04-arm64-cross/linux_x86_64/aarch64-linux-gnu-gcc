@@ -18,8 +18,7 @@ sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 # Include usr/lib/x86_64-linux-gnu/ alongside host-libs/: the cross packages deposit
 # x86_64 runtime libs there, and unlike the native archives this path has no x86_64
 # libc.so.6, so there is no glibc version mixing risk.
-[ -d "${sysroot}/host-libs" ] && \
-    export LD_LIBRARY_PATH="${sysroot}/host-libs:${sysroot}/usr/lib/x86_64-linux-gnu"
+export LD_LIBRARY_PATH="${sysroot}/usr/lib/x86_64-linux-gnu"
 
 # Due to https://github.com/bazelbuild/bazel/issues/16222 this is the only spot we can add
 # the --no-as-needed ld flag to make the final binary list every shared library provided on
