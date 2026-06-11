@@ -7,6 +7,6 @@ external_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../" && pwd)"
 # Include usr/lib/x86_64-linux-gnu/ alongside host-libs/: the cross packages deposit
 # x86_64 runtime libs there, and unlike the native archives this path has no x86_64
 # libc.so.6, so there is no glibc version mixing risk.
-export LD_LIBRARY_PATH="${external_dir}/ubuntu-22.04-arm64-cross/host-libs:${external_dir}/ubuntu-22.04-arm64-cross/usr/lib/x86_64-linux-gnu"
+export LD_LIBRARY_PATH="${external_dir}/ubuntu-22.04-arm64-cross/usr/lib/x86_64-linux-gnu"
 
 exec "${external_dir}/ubuntu-22.04-arm64-cross/usr/bin/aarch64-linux-gnu-ar" "$@"

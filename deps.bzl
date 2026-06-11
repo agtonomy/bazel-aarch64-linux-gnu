@@ -10,7 +10,7 @@ def aarch64_linux_gnu_deps():
     http_archive(
         name = "ubuntu-22.04-arm64-cross",
         build_file = "@aarch64_linux_gnu//toolchain:ubuntu-22.04-arm64-cross.BUILD",
-        sha256 = "f2cca1cb85f239ec48a20ebefa7868ca79d83bd12489f3ebdbcd48d583cfb5d5",
+        sha256 = "14d7e4f9cc87a3320033062a6978d848e5702186c9478b73cfb1c03744302b5b",
         strip_prefix = "ubuntu-22.04-arm64-cross",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-arm64-cross-2.tar.zst",
