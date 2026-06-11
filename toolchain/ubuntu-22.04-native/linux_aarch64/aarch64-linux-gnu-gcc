@@ -19,6 +19,9 @@ sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 # the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
 # to find those libraries:
 
+# Required so the host binaries can find shared libraries they need:
+[ -d "${sysroot}/host-libs" ] && export LD_LIBRARY_PATH="${sysroot}/host-libs"
+
 sanitizer_rpath=()
 [[ "$*" == *-fsanitize=* ]] && sanitizer_rpath=("-Wl,-rpath,${sysroot}/usr/lib/aarch64-linux-gnu/")
 

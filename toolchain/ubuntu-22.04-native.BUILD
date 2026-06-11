@@ -95,6 +95,12 @@ filegroup(
     ]),
 )
 
+# Shared libraries required to execute compiler binaries on the host system:
+filegroup(
+    name = "host_libraries",
+    srcs = glob(["host-libs/**"]),
+)
+
 # collection of executables.
 filegroup(
     name = "compiler_components",

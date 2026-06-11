@@ -19,6 +19,7 @@ filegroup(
     srcs = [
         "x86_64-linux-gnu-as",
         "@{}//:as".format(compiler),
+        "@{}//:host_libraries".format(compiler),
     ],
 )
 
@@ -41,6 +42,7 @@ filegroup(
         "@{}//:ar".format(compiler),
         "@{}//:compiler_pieces".format(compiler),
         "@{}//:gcc".format(compiler),
+        "@{}//:host_libraries".format(compiler),
         "@{}//:ld".format(compiler),
     ],
 )
@@ -50,6 +52,7 @@ filegroup(
     srcs = [
         "x86_64-linux-gnu-ar",
         "@{}//:ar".format(compiler),
+        "@{}//:host_libraries".format(compiler),
     ],
 )
 
