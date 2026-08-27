@@ -79,13 +79,17 @@ filegroup(
     ]),
 )
 
+# Every file gcc and ld reach at action time. Under remote execution an action
+# only sees the inputs it declares, so this deliberately globs whole directories
+# instead of matching *.so*/*.a: those two patterns miss gcc's extensionless
+# internals (cc1, cc1plus, collect2, lto1, lto-wrapper), the CRT objects
+# (crt1.o, crti.o, crtn.o, Scrt1.o, crtbegin.o, crtend.o), gcc's *.spec files,
+# and the GNU ld text scripts named libc.so / libpthread.so.
 filegroup(
     name = "libraries",
     srcs = glob([
-        "usr/aarch64-linux-gnu/lib/**/*.so*",
-        "usr/aarch64-linux-gnu/lib/*.a",
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/**/*.so*",
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/*.a",
+        "usr/aarch64-linux-gnu/lib/**",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/11/**",
     ]),
 )
 

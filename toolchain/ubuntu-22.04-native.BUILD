@@ -86,12 +86,27 @@ filegroup(
     ]),
 )
 
+# Every file gcc and ld reach at action time. Under remote execution an action
+# only sees the inputs it declares, so this deliberately globs whole directories
+# instead of matching *.so*/*.a: those two patterns miss gcc's extensionless
+# internals (cc1, cc1plus, collect2, lto1, lto-wrapper), the CRT objects
+# (crt1.o, crti.o, crtn.o, Scrt1.o, crtbegin.o, crtend.o), gcc's *.spec files,
+# and ld's linker scripts (ldscripts/, and the text scripts named libc.so /
+# libpthread.so).
 filegroup(
     name = "libraries",
     srcs = glob([
-        "usr/lib/*-linux-gnu/**/*.so*",
-        "usr/lib/*-linux-gnu/*.a",
-        "usr/lib/gcc/*-linux-gnu/11/*.a",
+        "usr/lib/*-linux-gnu/**",
+        "usr/lib/gcc/*-linux-gnu/11/**",
+        # The archives keep Ubuntu's merged-/usr layout, where the top-level
+        # lib/ and lib64/ are symlinks into usr/. glibc's ld scripts name the
+        # /lib spelling -- libc.so is
+        # GROUP(/lib/x86_64-linux-gnu/libc.so.6 ... AS_NEEDED(/lib64/ld-linux-x86-64.so.2))
+        # -- and ld resolves those against --sysroot, so the shared libraries
+        # they reach for have to be declared under that spelling too.
+        "lib/*-linux-gnu/*.so*",
+        "lib64/*.so*",
+        "usr/lib64/*.so*",
     ]),
 )
 

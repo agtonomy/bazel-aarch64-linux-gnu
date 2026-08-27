@@ -9,10 +9,16 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 external_dir="$(cd "${script_dir}/../../../../" && pwd)"
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's
-# sandbox symlinks, so resolve the actual path where libraries reside:
-libc_realpath="$(realpath "$(find "${external_dir}/ubuntu-22.04-aarch64-native/" -name libc.so.6 | head -n1)")" # This is the actual path to libc
-# Remove the filename and usr/aarch64-linux-gnu/lib to get the sysroot:
-sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
+# sandbox symlinks: gcc resolves its own binary before deriving the library search paths it
+# hands to ld, so unless --sysroot names the same directory gcc resolved to, ld stops
+# treating the absolute paths inside glibc's ld scripts (libc.so is a GROUP(...) script) as
+# sysroot-relative and looks for them at the real root. So derive the sysroot from the
+# realpath of the gcc binary itself: it is the one path guaranteed to agree with gcc under
+# the symlinking sandbox, the hermetic sandbox and remote execution alike. Don't go looking
+# for it with `find` either -- the archives keep Ubuntu's merged-/usr layout, so libc.so.6
+# sits at more than one depth and any depth-based guess is ambiguous.
+gcc_realpath="$(realpath "${external_dir}/ubuntu-22.04-aarch64-native/usr/bin/aarch64-linux-gnu-gcc-11")"
+sysroot="${gcc_realpath%/usr/bin/*}"
 
 # Due to https://github.com/bazelbuild/bazel/issues/16222 this is the only spot we can add
 # the --no-as-needed ld flag to make the final binary list every shared library provided on
@@ -25,9 +31,9 @@ sysroot="$(realpath "$(dirname "$libc_realpath")/../../../")"
 sanitizer_rpath=()
 [[ "$*" == *-fsanitize=* ]] && sanitizer_rpath=("-Wl,-rpath,${sysroot}/usr/lib/aarch64-linux-gnu/")
 
-"$sysroot/usr/bin/aarch64-linux-gnu-gcc-11" \
+"$gcc_realpath" \
     -Wl,--no-as-needed \
-    "-B${external_dir}/ubuntu-22.04-aarch64-native/usr/bin/" \
+    "-B${sysroot}/usr/bin/" \
     "${sanitizer_rpath[@]}" \
     "-B${script_dir}/" \
     "$@" --sysroot="$sysroot"
