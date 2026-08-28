@@ -107,6 +107,11 @@ filegroup(
         "lib/*-linux-gnu/*.so*",
         "lib64/*.so*",
         "usr/lib64/*.so*",
+        # aarch64 keeps the ELF interpreter directly in lib/ -- its libc.so says
+        # AS_NEEDED ( /lib/ld-linux-aarch64.so.1 ) where x86_64 says /lib64/... --
+        # so that spelling has to be declared too. Matches nothing on x86_64,
+        # whose lib/ holds only directories.
+        "lib/*.so*",
     ]),
 )
 
