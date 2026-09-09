@@ -10,8 +10,12 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "headers",
-    srcs = glob([
-        "usr/aarch64-linux-gnu/include/**",
-        "usr/include/**",
-    ]),
+    srcs = glob(
+        [
+            "usr/aarch64-linux-gnu/include/**",
+            "usr/include/**",
+        ],
+        # Only one of the above patterns is expected to match for a given toolchain
+        allow_empty = True,
+    ),
 )
