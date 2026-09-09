@@ -18,23 +18,51 @@ There are a few major issues to work around, both handled by:
     the sysroot in a way bazel can work with, in part or in whole due to some
     issue with symlinks. There's a sort-of-functional way to specify a sysroot
     in the bazel cc toolchain config, but there's no way to determine that path
-    dymanically in the correct scope without symlinks, the only way it works is
-    with a hard-coded path that is not at all portable. The workaround is to
-    use `find` to discover the path from the execroot (this is the working
-    directory when the `aarch64-linux-gnu-gcc` is executed,) which is not, itself,
-    a symlink, but its parent directory is, so run `realpath` on the output of
-    `dirname` and then append `/../../../` to remove the
-    `usr/aarch64-linux-gnu/lib` prefix and get to the root, then add that path
-    variable with `--sysroot` at the end of the `gcc` command, to override anything
-    bazel might set. This path could be hard-coded in the wrapper script to eliminate
-    several process spawns per gcc call, but that's less flexible.
+    dynamically in the correct scope, the only way it works is with a hard-coded
+    path that is not at all portable. The workaround is to compute it in the
+    wrapper: `realpath` the gcc binary and strip the trailing `/usr/bin/<gcc>`,
+    then pass the result as `--sysroot` at the end of the `gcc` command, to
+    override anything bazel might set.
+    Deriving it from the gcc binary specifically is what makes this work in every
+    execution environment. gcc resolves its own binary before computing the library
+    search paths it hands to ld, so under bazel's default (symlinking) sandbox gcc
+    ends up working from the real output_base path while the execroot path is a
+    symlink. If `--sysroot` names the execroot path instead, ld no longer sees the
+    ld scripts under `usr/aarch64-linux-gnu/lib` (`libc.so` is a `GROUP(...)`
+    script naming absolute paths) as living inside the sysroot, stops rewriting
+    those paths, and the link fails on `__libc_start_main`. Anchoring on gcc's own
+    realpath always agrees with gcc, whether the inputs were symlinked (default
+    sandbox), bind-mounted (hermetic sandbox) or materialized outright (remote
+    execution).
+    An earlier version discovered the sysroot by running `find` for `libc.so.6` and
+    walking up three directories. Don't go back to that: the archives keep Ubuntu's
+    merged-/usr layout (top-level `lib` is a symlink to `usr/lib`), so once those
+    paths are declared as inputs libc.so.6 is reachable at more than one depth and
+    the result is ambiguous. The current form is also three fewer process spawns per
+    gcc call and drops the dependency on `find` and `head` being on PATH.
 3. Ubuntu's compiler binaries aren't statically linked and require a few shared
     libraries from the bundle to execute on the host, which they don't seem to
-    be able to just pick up from the bazel sandbox enviroment, so use `find` to
-    set and export `$LD_LIBRARY_PATH`. This is also added to
-    `aarch64-linux-gnu-ar`.
+    be able to just pick up from the bazel sandbox enviroment, so set and export
+    `$LD_LIBRARY_PATH` pointing at the bundled host libraries (`host-libs/` in the
+    native archives, `usr/lib/x86_64-linux-gnu/` in the cross archive). This is
+    also added to `aarch64-linux-gnu-ar` and `aarch64-linux-gnu-as`.
 
 Minor issues:
 1. Ubuntu gcc defaults to defining `-D_FORTIFY_SOURCE` so when we add our setting
     to the `feature_flags` in `toolchain/config.bzl` that's an error, to fix this
     add `-U_FORTIFY_SOURCE` immediately before `-D_FORTIFY_SOURCE=1`
+
+Remote execution:
+1. None of the above is what makes the toolchain work remotely -- correct input
+    declaration is. The wrapper scripts only ever reach files that
+    `toolchain/ubuntu-22.04-arm64-cross.BUILD` and `toolchain/ubuntu-22.04-native.BUILD`
+    declare, which is why those `libraries` filegroups glob whole directories rather
+    than `*.so*`/`*.a`: the extension-matching version silently omitted gcc's
+    extensionless internals (`cc1`, `cc1plus`, `collect2`, `lto1`, `lto-wrapper`),
+    the CRT objects, the `*.spec` files and ld's linker scripts. Under the default
+    sandbox that went unnoticed, because `realpath` resolves a declared input back
+    out to the full unpacked archive in the output base and the undeclared files are
+    sitting right there next to the declared ones. A remote executor materializes
+    only the declared inputs, so anything missing from those filegroups is simply
+    absent. Build with `--config=hermetic` (see `tests/.bazelrc`) to catch that
+    locally; CI does this on every configuration.

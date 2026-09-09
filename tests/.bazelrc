@@ -8,3 +8,26 @@ build:jetpack_62 --platforms=@aarch64_linux_gnu//platforms:tegra_jetpack_62
 
 # Show verbose failures for debugging
 build --verbose_failures
+
+# Remote-execution hermeticity guard.
+#
+# The default linux sandbox symlinks declared inputs back into the output base, so an
+# action that reaches a file the toolchain never declared still finds it. The hermetic
+# sandbox bind-mounts the declared inputs instead, with nothing else reachable, which is
+# the same contract a remote executor gives an action. Building under it locally catches
+# under-declared toolchain inputs without needing an RE backend.
+#
+# The mount pairs stand in for the executor's container image: the toolchain wrapper
+# scripts shell out to bash, realpath and dirname, and those are host tools, not Bazel
+# inputs. An RE exec platform has to supply them the same way (see README.md).
+build:hermetic --spawn_strategy=linux-sandbox
+build:hermetic --experimental_use_hermetic_linux_sandbox
+build:hermetic --sandbox_add_mount_pair=/usr/bin:/bin
+build:hermetic --sandbox_add_mount_pair=/usr/bin
+build:hermetic --sandbox_add_mount_pair=/usr/lib:/lib
+build:hermetic --sandbox_add_mount_pair=/usr/lib
+
+# x86_64 hosts also need /lib64, which holds the ELF interpreter every host binary names.
+# arm64 Ubuntu has no /usr/lib64 to mount, so it keeps the plain --config=hermetic.
+build:hermetic_x86_64 --config=hermetic
+build:hermetic_x86_64 --sandbox_add_mount_pair=/usr/lib64:/lib64

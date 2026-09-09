@@ -68,6 +68,16 @@ jobs:
           ./verify_binary.sh bazel-bin/hello_c aarch64
           ./verify_binary.sh bazel-bin/hello_cc aarch64
 
+      # Guards remote-execution compatibility: the hermetic sandbox bind-mounts only
+      # declared inputs, so any file the toolchain reaches without declaring it fails
+      # here exactly as it would on a remote executor. See tests/.bazelrc.
+      - name: Build under hermetic sandbox (remote-execution guard)
+        working-directory: tests
+        run: |
+          bazel build //:all --config=aarch64 --config=hermetic_x86_64
+          bazel build //:all --config=jetpack_512 --config=hermetic_x86_64
+          bazel build //:all --config=jetpack_62 --config=hermetic_x86_64
+
   native-x86_64:
     name: Native x86_64
     runs-on: ubuntu-22.04
@@ -99,6 +109,10 @@ jobs:
           bazel-bin/hello_c
           bazel-bin/hello_cc
 
+      - name: Build under hermetic sandbox (remote-execution guard)
+        working-directory: tests
+        run: bazel build //:all --config=hermetic_x86_64
+
   native-arm64:
     name: Native ARM64
     runs-on: ubuntu-22.04-arm
@@ -129,6 +143,10 @@ jobs:
         run: |
           bazel-bin/hello_c
           bazel-bin/hello_cc
+
+      - name: Build under hermetic sandbox (remote-execution guard)
+        working-directory: tests
+        run: bazel build //:all --config=hermetic
 
   ci-ok:
     name: CI OK

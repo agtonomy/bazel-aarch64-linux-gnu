@@ -67,6 +67,57 @@ Finally, build a cc_binary target like so:
 bazel build --config jetpack62 //path/to/target
 ```
 
+## Remote execution
+
+The toolchains declare every file gcc, ld and the wrapper scripts touch as an action
+input, so they work under remote execution as well as locally. Two things are required
+of the RE setup:
+
+1. **The exec platform must be linux/x86_64** (or linux/aarch64 for the native aarch64
+   toolchain) **and must name a container image.** The compilers in these archives are
+   Ubuntu 22.04 host binaries, so the executor has to be able to run them:
+
+   ```python
+   platform(
+       name = "re_platform",
+       constraint_values = [
+           "@platforms//os:linux",
+           "@platforms//cpu:x86_64",
+       ],
+       exec_properties = {
+           "container-image": "docker://<your-ubuntu-22.04-based-image>",
+       },
+   )
+   ```
+
+   ```bash
+   bazel build //path/to/target --config=aarch64 \
+       --remote_executor=grpc://<host>:<port> \
+       --spawn_strategy=remote \
+       --extra_execution_platforms=//:re_platform
+   ```
+
+2. **The image must provide bash and coreutils.** The toolchain tools are shell wrappers
+   (see `README.hacks`) that run `bash`, `realpath`, `dirname` and `pwd`. Those are host
+   tools, not Bazel inputs, so the executor image has to supply them. Any standard
+   Ubuntu 22.04 base image does.
+
+### Checking hermeticity without an RE backend
+
+`tests/.bazelrc` defines a `hermetic` config that builds under Bazel's hermetic linux
+sandbox. Unlike the default sandbox, which symlinks inputs back into the output base and
+therefore lets an action reach files that were never declared, the hermetic sandbox
+bind-mounts only the declared inputs — the same contract a remote executor gives an
+action. An under-declared toolchain input fails there exactly as it would remotely:
+
+```bash
+cd tests
+bazel build //:all --config=aarch64 --config=hermetic_x86_64   # x86_64 host
+bazel build //:all --config=hermetic                           # aarch64 host
+```
+
+CI runs this for every configuration, so under-declaration cannot regress silently.
+
 ## How does this all work?
 Beginning from the project repository, the toolchain resolution process goes like:
 1. `aarch64_linux_gnu_deps` is loaded from `deps.bzl` and invoked.
