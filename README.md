@@ -32,7 +32,7 @@ Requires Bazel 7.7.1 or newer, and is tested on 7.7.1 and 9.x in CI. This is a
 bzlmod-only module: Bazel 9 removed WORKSPACE support, so there is no `deps.bzl`
 entry point to load from a `WORKSPACE` any more.
 
-Include the following in your `MODULE.bazel` with appropriate commit and sha256sum
+Include the following in your `MODULE.bazel` with appropriate commit and integrity hash
 
 ```python
 bazel_dep(name = "aarch64_linux_gnu", version = "0.0.0")
@@ -41,7 +41,9 @@ AARCH64_LINUX_GNU_COMMIT = "INSERT COMMIT HASH HERE"
 
 archive_override(
     module_name = "aarch64_linux_gnu",
-    integrity = "INSERT SHA256 HERE",
+    # archive_override takes an SRI integrity hash, not a hex sha256sum:
+    #   curl -sL <url> | openssl dgst -sha256 -binary | openssl base64 -A
+    integrity = "sha256-INSERT BASE64 DIGEST HERE",
     strip_prefix = "bazel-aarch64-linux-gnu-" + AARCH64_LINUX_GNU_COMMIT,
     urls = ["https://github.com/agtonomy/bazel-aarch64-linux-gnu/archive/" + AARCH64_LINUX_GNU_COMMIT + ".tar.gz"],
 )
@@ -66,8 +68,8 @@ register_toolchains(
 
 Then include the following in your `.bazelrc`
 ```bash
-build:jetpack_512 --platforms=@aarch64_linux_gnu//platforms:jetpack_512
-build:jetpack_62 --platforms=@aarch64_linux_gnu//platforms:jetpack_62
+build:jetpack_512 --platforms=@aarch64_linux_gnu//platforms:tegra_jetpack_512
+build:jetpack_62 --platforms=@aarch64_linux_gnu//platforms:tegra_jetpack_62
 ```
 
 A side effect of toolchain resolution is that the bazel output paths don't include the target cpu,

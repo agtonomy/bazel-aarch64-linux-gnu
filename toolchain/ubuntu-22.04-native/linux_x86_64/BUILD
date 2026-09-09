@@ -60,6 +60,7 @@ filegroup(
     name = "objcopy_files",
     srcs = [
         "x86_64-linux-gnu-objcopy",
+        "@{}//:host_libraries".format(compiler),
         "@{}//:objcopy".format(compiler),
     ],
 )
@@ -68,6 +69,7 @@ filegroup(
     name = "strip_files",
     srcs = [
         "x86_64-linux-gnu-strip",
+        "@{}//:host_libraries".format(compiler),
         "@{}//:strip".format(compiler),
     ],
 )
