@@ -15,8 +15,7 @@ filegroup(
             "usr/aarch64-linux-gnu/include/**",
             "usr/include/**",
         ],
-        # Each downstream archive (native aarch64, native x86_64, cross) only ships one
-        # of these two include layouts; the other pattern legitimately matches nothing.
+        # Only one of the above patterns is expected to match for a given toolchain
         allow_empty = True,
     ),
 )
