@@ -146,13 +146,15 @@ cc_linux_gnu_config(
     gcc_repo = compiler,
     gcc_version = "11",
     host_system_name = "linux_x86_64",
+    sysroot = "@{}//:gcc".format(compiler),
     include_paths = [
         "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
         "usr/aarch64-linux-gnu/include/c++/11/",
         "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
-        "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.15.0-aarch64-cross"),
     ],
+    libc_headers = "@linux-libc-5.15.0-aarch64-cross//:headers",
+    libc_include_paths = ["usr/aarch64-linux-gnu/include/"],
     toolchain_identifier = "ubuntu-22.04-arm64-cross",
     wrapper_path = "ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-",
 )
@@ -162,13 +164,15 @@ cc_linux_gnu_config(
     gcc_repo = compiler,
     gcc_version = "11",
     host_system_name = "linux_x86_64",
+    sysroot = "@{}//:gcc".format(compiler),
     include_paths = [
         "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
         "usr/aarch64-linux-gnu/include/c++/11/",
         "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
-        "external/{}/usr/aarch64-linux-gnu/include/".format("linux-libc-5.4.0-aarch64-cross"),
     ],
+    libc_headers = "@linux-libc-5.4.0-aarch64-cross//:headers",
+    libc_include_paths = ["usr/aarch64-linux-gnu/include/"],
     toolchain_identifier = "ubuntu-22.04-arm64-cross",
     wrapper_path = "ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-",
 )
