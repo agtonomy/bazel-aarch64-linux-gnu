@@ -4,6 +4,18 @@ load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_gro
 def wrapper_path(ctx, tool):
     return tool_path(name = tool, path = ctx.attr.wrapper_path + tool)
 
+def _repo_relative_isystem_flags(repo_target, paths):
+    # repo_target.label.workspace_root resolves to the on-disk path of the repo
+    # (e.g. "external/<name>") regardless of how Bazel names/lays out external
+    # repos (WORKSPACE vs bzlmod canonical names, sibling repository layout, etc.),
+    # so paths built this way stay correct across those variations.
+    repo_root = repo_target.label.workspace_root
+    flags = []
+    for path in paths:
+        flags.append("-isystem")
+        flags.append(repo_root + "/" + path)
+    return flags
+
 def _impl(ctx):
     tool_paths = [
         wrapper_path(ctx, "gcc"),
@@ -17,13 +29,9 @@ def _impl(ctx):
         wrapper_path(ctx, "strip"),
     ]
 
-    include_flags = []
-    for path in ctx.attr.include_paths:
-        include_flags.append("-isystem")
-        if path.startswith("external"):
-            include_flags.append(path)
-        else:
-            include_flags.append("external/{}/{}".format(ctx.attr.gcc_repo, path))
+    include_flags = _repo_relative_isystem_flags(ctx.attr.sysroot, ctx.attr.include_paths)
+    if ctx.attr.libc_headers:
+        include_flags += _repo_relative_isystem_flags(ctx.attr.libc_headers, ctx.attr.libc_include_paths)
 
     linker_flags = [
         "-lstdc++",
@@ -200,7 +208,10 @@ cc_linux_gnu_config = rule(
         "host_system_name": attr.string(default = ""),
         "target_system_name": attr.string(default = "aarch64-linux-gnu"),
         "target_cpu": attr.string(default = "aarch64"),  # Used to construct _solib path
-        "include_paths": attr.string_list(default = []),
+        "sysroot": attr.label(mandatory = True),  # Anchor target used to locate the gcc_repo's on-disk path
+        "include_paths": attr.string_list(default = []),  # Relative to sysroot's repo root
+        "libc_headers": attr.label(),  # Anchor target used to locate the linux-libc repo's on-disk path
+        "libc_include_paths": attr.string_list(default = []),  # Relative to libc_headers' repo root
         "wrapper_path": attr.string(default = ""),
         "gcc_repo": attr.string(default = ""),
         "gcc_version": attr.string(default = ""),

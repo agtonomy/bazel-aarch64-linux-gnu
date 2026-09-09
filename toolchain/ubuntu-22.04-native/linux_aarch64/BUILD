@@ -146,6 +146,7 @@ cc_linux_gnu_config(
     gcc_repo = compiler,
     gcc_version = "11",
     host_system_name = "linux_aarch64",
+    sysroot = "@{}//:gcc".format(compiler),
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
         "usr/lib/gcc/aarch64-linux-gnu/11/include/",
@@ -153,8 +154,11 @@ cc_linux_gnu_config(
         "usr/include/c++/11/",
         "usr/include/aarch64-linux-gnu/c++/11/",
         "usr/include/",
-        "external/{}/usr/include/".format("linux-libc-5.15.0-aarch64"),
-        "external/{}/usr/include/aarch64-linux-gnu/".format("linux-libc-5.15.0-aarch64"),
+    ],
+    libc_headers = "@linux-libc-5.15.0-aarch64//:headers",
+    libc_include_paths = [
+        "usr/include/",
+        "usr/include/aarch64-linux-gnu/",
     ],
     toolchain_identifier = "ubuntu-22.04-aarch64-native",
     wrapper_path = "ubuntu-22.04-native/linux_aarch64/aarch64-linux-gnu-",
@@ -165,6 +169,7 @@ cc_linux_gnu_config(
     gcc_repo = compiler,
     gcc_version = "11",
     host_system_name = "linux_aarch64",
+    sysroot = "@{}//:gcc".format(compiler),
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
         "usr/lib/gcc/aarch64-linux-gnu/11/include/",
@@ -172,8 +177,11 @@ cc_linux_gnu_config(
         "usr/include/c++/11/",
         "usr/include/aarch64-linux-gnu/c++/11/",
         "usr/include/",
-        "external/{}/usr/include/".format("linux-libc-5.4.0-aarch64"),
-        "external/{}/usr/include/aarch64-linux-gnu/".format("linux-libc-5.4.0-aarch64"),
+    ],
+    libc_headers = "@linux-libc-5.4.0-aarch64//:headers",
+    libc_include_paths = [
+        "usr/include/",
+        "usr/include/aarch64-linux-gnu/",
     ],
     toolchain_identifier = "ubuntu-22.04-aarch64-native",
     wrapper_path = "ubuntu-22.04-native/linux_aarch64/aarch64-linux-gnu-",
