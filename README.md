@@ -148,19 +148,29 @@ Beginning from the project repository, the toolchain resolution process goes lik
     on build target platform which are not assigned to a given toolchain are not considered,
     thus the order mentioned above is used to give jetpack toolchains (with more specific
     platform constraints) higher selection priority over the generic toolchains.
-4. The `cc_toolchain` calls collect a set of toolchain files (executables, shared libraries,
-    and headers,) plus a config, both types are defined in a BUILD path specific to each
-    compiler, eg `toolchain/ubuntu-22.04-arm64-cross/linux_x86_64/BUILD`. Each compiler may
-    support multiple similar platforms by including slightly different headers and calling
-    `cc_toolchain` with platform-specific filegroups and config.
-5. The config is created by calling the `cc_linux_gnu_config`, loaded from `toolchain/config.bzl`,
-    which is a wrapper around `cc_common.create_cc_toolchain_config_info`. This is where the
-    various toolchain executables (really shell scripts which wrap them,) and build flags are
-    defined. Keep in mind that relative paths are relative to the execroot which bazel sets
-    up for each step of the build, with files from packages in a subdirectory of `external`,
-    eg `<execroot>/external/<repo>/usr/bin/x86_64-linux-gnu-ld`, which breaks down to
+4. Each `toolchain()` target's `cc_toolchain` doesn't live in this repo: a `cc_toolchain`'s
+    `tool_path` strings (the wrapper scripts) resolve relative to the package of the
+    `cc_toolchain` target itself, with no way to reach into a different repository, so
+    the `cc_toolchain`, its config, and its wrapper scripts all have to live alongside
+    the compiler archive they wrap -- a repository this one doesn't control the canonical
+    name of. `toolchain/wrapper_repo.bzl`'s `cc_wrapper_repo` repository rule generates
+    that companion repo (eg `ubuntu-22.04-arm64-cross-toolchain`) for each compiler
+    archive, called from `extensions.bzl` alongside the `http_archive` that fetches the
+    archive itself. Each compiler may support multiple similar platforms by including
+    slightly different headers and calling `cc_toolchain` with platform-specific
+    filegroups and config within that same generated repo.
+5. The config is created by calling `cc_linux_gnu_config`, loaded from
+    `toolchain/config.bzl`, which is a wrapper around
+    `cc_common.create_cc_toolchain_config_info`. This is where the various toolchain
+    executables (really shell scripts which wrap them,) and build flags are defined.
+    Keep in mind that relative paths are relative to the execroot which bazel sets up for
+    each step of the build, with files from packages in a subdirectory of `external`, eg
+    `<execroot>/external/<repo>/usr/bin/x86_64-linux-gnu-ld`, which breaks down to
     `external`, then the repo directory, then the path from within the tar archive (after
     the strip prefix is applied.) Under bzlmod that repo directory is the canonical name
     Bazel derives from the module and extension, eg
-    `aarch64_linux_gnu+toolchains+ubuntu-22.04-x86_64-native`, not the plain name passed to
-    `http_archive`, which is why nothing hardcodes it (see `README.hacks`).
+    `aarch64_linux_gnu+toolchains+ubuntu-22.04-x86_64-native`, not the plain name passed
+    to `http_archive`. `cc_linux_gnu_config`'s `sysroot`/`libc_headers` attrs take a
+    `Label` and read `Label.workspace_root` off it for exactly this reason; the wrapper
+    scripts (which only take a plain string, not a `Label`) get the same repo directory
+    name baked in by `cc_wrapper_repo` instead (see `README.hacks`).

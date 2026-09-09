@@ -4,7 +4,6 @@ module(
     name = "aarch64_linux_gnu",
     version = "0.0.0",
     bazel_compatibility = [">=7.7.1"],
-    compatibility_level = 1,
 )
 
 bazel_dep(name = "platforms", version = "1.1.0")
@@ -19,8 +18,11 @@ use_repo(
     "linux-libc-5.4.0-aarch64",
     "linux-libc-5.4.0-aarch64-cross",
     "ubuntu-22.04-aarch64-native",
+    "ubuntu-22.04-aarch64-native-toolchain",
     "ubuntu-22.04-arm64-cross",
+    "ubuntu-22.04-arm64-cross-toolchain",
     "ubuntu-22.04-x86_64-native",
+    "ubuntu-22.04-x86_64-native-toolchain",
 )
 
 # Register the Jetpack toolchains first, so bazel chooses them over the generic ones.

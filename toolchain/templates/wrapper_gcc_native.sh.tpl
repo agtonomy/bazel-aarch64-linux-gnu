@@ -6,11 +6,17 @@ export PATH="/bin:$PATH"
 
 # Always resolve from script location so paths work when a caller (e.g. rules_go) chdirs:
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-external_dir="$(cd "${script_dir}/../../../../" && pwd)"
-# The archive is a sibling external repo whose directory carries a canonical bzlmod name
-# ("<module>+<extension>+<name>"), so match on the suffix; only the repos this action
-# declares are linked into external/, so exactly one matches. See README.hacks.
-archive_dir="$(cd "${external_dir}"/*ubuntu-22.04-aarch64-native && pwd)"
+
+# This wrapper lives in a small repository generated solely to hold cc_toolchain
+# declarations and wrapper scripts side by side: a cc_toolchain's tool_path strings
+# resolve relative to the package of the cc_toolchain target itself, with no way to
+# reach into a different repository, so the wrapper can't live directly in the fetched
+# compiler archive it wraps. Find the execroot from this repo's own fixed, three-level
+# "external/<this repo>/wrappers/<file>" layout -- a constant this rule controls, unlike
+# the archive's canonical bzlmod name -- then reach the archive via its baked-in,
+# execroot-relative location (computed from Label.workspace_root at repository-fetch
+# time, so it stays correct across WORKSPACE and every bzlmod canonical-name scheme).
+archive_dir="$(cd "${script_dir}/../../.." && pwd)/%{archive_workspace_root}%"
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's
 # sandbox symlinks: gcc resolves its own binary before deriving the library search paths it
@@ -21,19 +27,19 @@ archive_dir="$(cd "${external_dir}"/*ubuntu-22.04-aarch64-native && pwd)"
 # the symlinking sandbox, the hermetic sandbox and remote execution alike. Don't go looking
 # for it with `find` either -- the archives keep Ubuntu's merged-/usr layout, so libc.so.6
 # sits at more than one depth and any depth-based guess is ambiguous.
-gcc_realpath="$(realpath "${archive_dir}/usr/bin/aarch64-linux-gnu-gcc-11")"
+gcc_realpath="$(realpath "${archive_dir}/usr/bin/%{real_binary}%")"
 sysroot="${gcc_realpath%/usr/bin/*}"
-
-# Due to https://github.com/bazelbuild/bazel/issues/16222 this is the only spot we can add
-# the --no-as-needed ld flag to make the final binary list every shared library provided on
-# the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
-# to find those libraries:
 
 # Required so the host binaries can find shared libraries they need:
 [ -d "${sysroot}/host-libs" ] && export LD_LIBRARY_PATH="${sysroot}/host-libs"
 
 sanitizer_rpath=()
-[[ "$*" == *-fsanitize=* ]] && sanitizer_rpath=("-Wl,-rpath,${sysroot}/usr/lib/aarch64-linux-gnu/")
+[[ "$*" == *-fsanitize=* ]] && sanitizer_rpath=("-Wl,-rpath,${sysroot}/usr/lib/%{lib_arch}%/")
+
+# Due to https://github.com/bazelbuild/bazel/issues/16222 this is the only spot we can add
+# the --no-as-needed ld flag to make the final binary list every shared library provided on
+# the command line as DT_NEEDED, which is required to make ld.so use the RPATH entries
+# to find those libraries:
 
 "$gcc_realpath" \
     -Wl,--no-as-needed \

@@ -10,8 +10,381 @@ which MODULE.bazel does for this repo itself.
 """
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("//toolchain:wrapper_repo.bzl", "cc_wrapper_repo")
 
-# Using ARM release https://developer.arm.com/downloads/-/gnu-rm (Version 10.3-2021.10)
+_ARM64_CROSS_BUILD_EXTRA = """
+filegroup(
+    name = "jp62_all_files",
+    srcs = [
+        ":ar_files",
+        ":jp62_compiler_files",
+        ":jp62_linker_files",
+        ":strip_files",
+    ],
+)
+
+filegroup(
+    name = "jp62_compiler_files",
+    srcs = [
+        ":compiler_files",
+        ":jp62_compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "jp62_linker_files",
+    srcs = [
+        ":jp62_compiler_pieces",
+        ":linker_files",
+    ],
+)
+
+filegroup(
+    name = "jp62_compiler_pieces",
+    srcs = [
+        "@linux-libc-5.15.0-aarch64-cross//:headers",
+        "@ubuntu-22.04-arm64-cross//:compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "jp512_all_files",
+    srcs = [
+        ":ar_files",
+        ":jp512_compiler_files",
+        ":jp512_linker_files",
+        ":strip_files",
+    ],
+)
+
+filegroup(
+    name = "jp512_compiler_files",
+    srcs = [
+        ":compiler_files",
+        ":jp512_compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "jp512_linker_files",
+    srcs = [
+        ":jp512_compiler_pieces",
+        ":linker_files",
+    ],
+)
+
+filegroup(
+    name = "jp512_compiler_pieces",
+    srcs = [
+        "@linux-libc-5.4.0-aarch64-cross//:headers",
+        "@ubuntu-22.04-arm64-cross//:compiler_pieces",
+    ],
+)
+
+cc_linux_gnu_config(
+    name = "jp62_config",
+    gcc_repo = "ubuntu-22.04-arm64-cross",
+    gcc_version = "11",
+    host_system_name = "linux_x86_64",
+    sysroot = "@ubuntu-22.04-arm64-cross//:gcc",
+    include_paths = [
+        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
+        "usr/aarch64-linux-gnu/include/c++/11/",
+        "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
+        "usr/aarch64-linux-gnu/include/",
+    ],
+    libc_headers = "@linux-libc-5.15.0-aarch64-cross//:headers",
+    libc_include_paths = ["usr/aarch64-linux-gnu/include/"],
+    toolchain_identifier = "ubuntu-22.04-arm64-cross",
+    wrapper_path = "wrappers/aarch64-linux-gnu-",
+)
+
+cc_linux_gnu_config(
+    name = "jp512_config",
+    gcc_repo = "ubuntu-22.04-arm64-cross",
+    gcc_version = "11",
+    host_system_name = "linux_x86_64",
+    sysroot = "@ubuntu-22.04-arm64-cross//:gcc",
+    include_paths = [
+        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
+        "usr/aarch64-linux-gnu/include/c++/11/",
+        "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
+        "usr/aarch64-linux-gnu/include/",
+    ],
+    libc_headers = "@linux-libc-5.4.0-aarch64-cross//:headers",
+    libc_include_paths = ["usr/aarch64-linux-gnu/include/"],
+    toolchain_identifier = "ubuntu-22.04-arm64-cross",
+    wrapper_path = "wrappers/aarch64-linux-gnu-",
+)
+
+# Ubuntu 22.04 gcc 11 ARM64 on x86_64 Cross Compile Toolchain
+cc_toolchain(
+    name = "aarch64_gcc-11_linux_x86_64",
+    all_files = ":jp62_all_files",
+    ar_files = ":ar_files",
+    compiler_files = ":jp62_compiler_files",
+    dwp_files = ":empty",
+    linker_files = ":jp62_linker_files",
+    objcopy_files = ":objcopy_files",
+    strip_files = ":strip_files",
+    supports_param_files = 0,
+    toolchain_config = ":jp62_config",
+    toolchain_identifier = "jp62_linux_x86_64",
+)
+
+# Same definitions as aarch64_gcc-11_linux_x86_64, but creates a distinct target,
+# to make the output of bazel --toolchain_resolution_debug clearer:
+cc_toolchain(
+    name = "jp62_aarch64_gcc-11_linux_x86_64",
+    all_files = ":jp62_all_files",
+    ar_files = ":ar_files",
+    compiler_files = ":jp62_compiler_files",
+    dwp_files = ":empty",
+    linker_files = ":jp62_linker_files",
+    objcopy_files = ":objcopy_files",
+    strip_files = ":strip_files",
+    supports_param_files = 0,
+    toolchain_config = ":jp62_config",
+    toolchain_identifier = "jp62_linux_x86_64",
+)
+
+# Same as jp62, but bundles linux-libc-headers from kernel 5.4.0:
+cc_toolchain(
+    name = "jp512_aarch64_gcc-11_linux_x86_64",
+    all_files = ":jp512_all_files",
+    ar_files = ":ar_files",
+    compiler_files = ":jp512_compiler_files",
+    dwp_files = ":empty",
+    linker_files = ":jp512_linker_files",
+    objcopy_files = ":objcopy_files",
+    strip_files = ":strip_files",
+    supports_param_files = 0,
+    toolchain_config = ":jp512_config",
+    toolchain_identifier = "jp512_linux_x86_64",
+)
+"""
+
+_AARCH64_NATIVE_BUILD_EXTRA = """
+filegroup(
+    name = "aarch64_compiler_pieces",
+    srcs = [
+        "@linux-libc-5.15.0-aarch64//:headers",
+        "@ubuntu-22.04-aarch64-native//:compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "aarch64_all_files",
+    srcs = [
+        ":ar_files",
+        ":aarch64_compiler_files",
+        ":aarch64_linker_files",
+        ":strip_files",
+    ],
+)
+
+filegroup(
+    name = "aarch64_compiler_files",
+    srcs = [
+        ":aarch64_compiler_pieces",
+        ":compiler_files",
+    ],
+)
+
+filegroup(
+    name = "aarch64_linker_files",
+    srcs = [
+        ":aarch64_compiler_pieces",
+        ":linker_files",
+    ],
+)
+
+# Set of files with Jetpack 5.1.2 linux-libc headers:
+filegroup(
+    name = "jp512_compiler_pieces",
+    srcs = [
+        "@linux-libc-5.4.0-aarch64//:headers",
+        "@ubuntu-22.04-aarch64-native//:compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "jp512_all_files",
+    srcs = [
+        ":ar_files",
+        ":jp512_compiler_files",
+        ":jp512_linker_files",
+        ":strip_files",
+    ],
+)
+
+filegroup(
+    name = "jp512_compiler_files",
+    srcs = [
+        ":compiler_files",
+        ":jp512_compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "jp512_linker_files",
+    srcs = [
+        ":jp512_compiler_pieces",
+        ":linker_files",
+    ],
+)
+
+cc_linux_gnu_config(
+    name = "aarch64_config",
+    gcc_repo = "ubuntu-22.04-aarch64-native",
+    gcc_version = "11",
+    host_system_name = "linux_aarch64",
+    sysroot = "@ubuntu-22.04-aarch64-native//:gcc",
+    include_paths = [
+        # Path order is important to avoid bazel errors about undeclared files:
+        "usr/lib/gcc/aarch64-linux-gnu/11/include/",
+        "usr/include/aarch64-linux-gnu/",
+        "usr/include/c++/11/",
+        "usr/include/aarch64-linux-gnu/c++/11/",
+        "usr/include/",
+    ],
+    libc_headers = "@linux-libc-5.15.0-aarch64//:headers",
+    libc_include_paths = [
+        "usr/include/",
+        "usr/include/aarch64-linux-gnu/",
+    ],
+    toolchain_identifier = "ubuntu-22.04-aarch64-native",
+    wrapper_path = "wrappers/aarch64-linux-gnu-",
+)
+
+cc_linux_gnu_config(
+    name = "jp512_config",
+    gcc_repo = "ubuntu-22.04-aarch64-native",
+    gcc_version = "11",
+    host_system_name = "linux_aarch64",
+    sysroot = "@ubuntu-22.04-aarch64-native//:gcc",
+    include_paths = [
+        # Path order is important to avoid bazel errors about undeclared files:
+        "usr/lib/gcc/aarch64-linux-gnu/11/include/",
+        "usr/include/aarch64-linux-gnu/",
+        "usr/include/c++/11/",
+        "usr/include/aarch64-linux-gnu/c++/11/",
+        "usr/include/",
+    ],
+    libc_headers = "@linux-libc-5.4.0-aarch64//:headers",
+    libc_include_paths = [
+        "usr/include/",
+        "usr/include/aarch64-linux-gnu/",
+    ],
+    toolchain_identifier = "ubuntu-22.04-aarch64-native",
+    wrapper_path = "wrappers/aarch64-linux-gnu-",
+)
+
+# Ubuntu 22.04 gcc 11 aarch64 Native Toolchain
+cc_toolchain(
+    name = "gcc-11_linux_aarch64",
+    all_files = ":aarch64_all_files",
+    ar_files = ":ar_files",
+    compiler_files = ":aarch64_compiler_files",
+    dwp_files = ":empty",
+    linker_files = ":aarch64_linker_files",
+    objcopy_files = ":objcopy_files",
+    strip_files = ":strip_files",
+    supports_param_files = 0,
+    toolchain_config = ":aarch64_config",
+    toolchain_identifier = "linux_aarch64",
+)
+
+# Ubuntu 22.04 gcc 11 aarch64 jp512 toolchain
+cc_toolchain(
+    name = "jp512_aarch64_gcc-11_linux",
+    all_files = ":jp512_all_files",
+    ar_files = ":ar_files",
+    compiler_files = ":jp512_compiler_files",
+    dwp_files = ":empty",
+    linker_files = ":jp512_linker_files",
+    objcopy_files = ":objcopy_files",
+    strip_files = ":strip_files",
+    supports_param_files = 0,
+    toolchain_config = ":jp512_config",
+    toolchain_identifier = "linux_aarch64",
+)
+"""
+
+_X86_64_NATIVE_BUILD_EXTRA = """
+filegroup(
+    name = "x86_64_compiler_pieces",
+    srcs = [
+        "@linux-libc-5.15.0-x86_64//:headers",
+        "@ubuntu-22.04-x86_64-native//:compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "x86_64_all_files",
+    srcs = [
+        ":ar_files",
+        ":strip_files",
+        ":x86_64_compiler_files",
+        ":x86_64_linker_files",
+    ],
+)
+
+filegroup(
+    name = "x86_64_compiler_files",
+    srcs = [
+        ":compiler_files",
+        ":x86_64_compiler_pieces",
+    ],
+)
+
+filegroup(
+    name = "x86_64_linker_files",
+    srcs = [
+        ":linker_files",
+        ":x86_64_compiler_pieces",
+    ],
+)
+
+cc_linux_gnu_config(
+    name = "x86_64_config",
+    gcc_repo = "ubuntu-22.04-x86_64-native",
+    gcc_version = "11",
+    host_system_name = "linux_x86_64",
+    sysroot = "@ubuntu-22.04-x86_64-native//:gcc",
+    include_paths = [
+        "usr/lib/gcc/x86_64-linux-gnu/11/include/",
+        "usr/include/x86_64-linux-gnu/",
+        "usr/include/c++/11/",
+        "usr/include/x86_64-linux-gnu/c++/11/",
+        "usr/include/",
+    ],
+    libc_headers = "@linux-libc-5.15.0-x86_64//:headers",
+    libc_include_paths = [
+        "usr/include/",
+        "usr/include/x86_64-linux-gnu/",
+    ],
+    target_cpu = "k8",
+    target_system_name = "linux_x86_64",
+    toolchain_identifier = "ubuntu-22.04-x86_64-native",
+    wrapper_path = "wrappers/x86_64-linux-gnu-",
+)
+
+# Ubuntu 22.04 gcc 11 x86_64 Native Toolchain
+cc_toolchain(
+    name = "gcc-11_linux_x86_64",
+    all_files = ":x86_64_all_files",
+    ar_files = ":ar_files",
+    compiler_files = ":x86_64_compiler_files",
+    dwp_files = ":empty",
+    linker_files = ":x86_64_linker_files",
+    objcopy_files = ":objcopy_files",
+    strip_files = ":strip_files",
+    supports_param_files = 0,
+    toolchain_config = ":x86_64_config",
+    toolchain_identifier = "linux_x86_64",
+)
+"""
 
 def _toolchain_repositories():
     http_archive(
@@ -24,6 +397,16 @@ def _toolchain_repositories():
         ],
     )
 
+    cc_wrapper_repo(
+        name = "ubuntu-22.04-arm64-cross-toolchain",
+        archive = "@ubuntu-22.04-arm64-cross//:gcc",
+        archive_apparent_name = "ubuntu-22.04-arm64-cross",
+        variant = "cross",
+        prefix = "aarch64-linux-gnu",
+        gcc_version = "11",
+        build_extra = _ARM64_CROSS_BUILD_EXTRA,
+    )
+
     http_archive(
         name = "ubuntu-22.04-aarch64-native",
         build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
@@ -34,6 +417,16 @@ def _toolchain_repositories():
         ],
     )
 
+    cc_wrapper_repo(
+        name = "ubuntu-22.04-aarch64-native-toolchain",
+        archive = "@ubuntu-22.04-aarch64-native//:gcc",
+        archive_apparent_name = "ubuntu-22.04-aarch64-native",
+        variant = "native",
+        prefix = "aarch64-linux-gnu",
+        gcc_version = "11",
+        build_extra = _AARCH64_NATIVE_BUILD_EXTRA,
+    )
+
     http_archive(
         name = "ubuntu-22.04-x86_64-native",
         build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
@@ -42,6 +435,16 @@ def _toolchain_repositories():
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-x86_64-native-2.tar.zst",
         ],
+    )
+
+    cc_wrapper_repo(
+        name = "ubuntu-22.04-x86_64-native-toolchain",
+        archive = "@ubuntu-22.04-x86_64-native//:gcc",
+        archive_apparent_name = "ubuntu-22.04-x86_64-native",
+        variant = "native",
+        prefix = "x86_64-linux-gnu",
+        gcc_version = "11",
+        build_extra = _X86_64_NATIVE_BUILD_EXTRA,
     )
 
     # For Jetpack 6.2 cross compile:

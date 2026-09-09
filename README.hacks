@@ -3,8 +3,8 @@ which has a couple side-effects which make them hard to integrate with bazel.
 
 The correct solution is to just pick (or build) a different toolchain.
 
-There are a few major issues to work around, both handled by:
-`toolchain/ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-gcc`
+There are a few major issues to work around, most handled by the generated
+`aarch64-linux-gnu-gcc` wrapper script (see item 4 below for where it actually lives).
 
 1. Ubuntu gcc/ld adds the `-as-needed` flag by default, which causes ld to only
     directly link to shared objects with symbols referenced by the binary being
@@ -46,20 +46,26 @@ There are a few major issues to work around, both handled by:
     `$LD_LIBRARY_PATH` pointing at the bundled host libraries (`host-libs/` in the
     native archives, `usr/lib/x86_64-linux-gnu/` in the cross archive). This is
     also added to `aarch64-linux-gnu-ar` and `aarch64-linux-gnu-as`.
-4. The wrapper scripts live in this repo while the binaries they exec live in a
-    separate archive repo, so each wrapper has to name that repo's directory. It cannot
-    be hardcoded: under bzlmod the directory is the canonical name Bazel derives for an
-    extension-generated repo (`<module>+<extension>+<name>`), which depends on where the
-    module sits in the dependency graph. The wrappers instead `cd` up to `external/` and
-    glob for the suffix, `*ubuntu-22.04-arm64-cross`. Only the repos an action declares
-    are linked into its `external/`, so exactly one directory matches, and `cd` fails
-    loudly rather than silently picking one if that ever stops holding.
-    Glob after the `cd`, never across it: bash resolves symlinks while expanding a
-    pathname but keeps the logical path in `cd`, and `external/` is reached through a
-    symlink. `cd external/<repo>/../../../../*name` therefore walks out of the execroot
-    into wherever the repo really lives (for a `local_path_override` module, the source
-    tree) and matches nothing, which is how a non-sandboxed build fails while a sandboxed
-    one passes.
+4. A `cc_toolchain`'s `tool_path` strings resolve relative to the package of the
+    `cc_toolchain` target itself, and `tool_path` takes a plain string rather than a
+    `Label`, so it has no way to reach into a different repository. That means a wrapper
+    script named by `tool_path` has to live in the same repository as the `cc_toolchain`
+    that names it -- but the compiler binaries it execs come from a separately
+    `http_archive`-fetched repository whose on-disk directory is a canonical bzlmod name
+    this repo can't predict ahead of time (`<module>+<extension>+<name>`, which depends
+    on where the module sits in the dependency graph, and differs by Bazel major version
+    too -- Bazel 7 still uses the older `~`-separated form).
+    `toolchain/wrapper_repo.bzl` resolves this by generating a small companion
+    repository per compiler archive (`ubuntu-22.04-arm64-cross-toolchain` and so on) that
+    holds both the wrapper scripts and the `cc_toolchain`/`cc_linux_gnu_config`
+    declarations that name them, so `tool_path` always resolves locally. The
+    `repository_rule` that generates it takes a `Label` into the archive repo purely to
+    read `Label.workspace_root` off it -- the archive's execroot-relative path, which
+    Bazel always computes correctly regardless of the canonical name in use -- and bakes
+    that string into each wrapper script. At wrapper-script runtime, finding the
+    companion repo's own execroot-relative location is a fixed, three-level
+    `external/<this repo>/wrappers/<file>` traversal that this rule controls directly
+    (not a name it has to discover), so no `find` or glob is needed at all.
 
 Minor issues:
 1. Ubuntu gcc defaults to defining `-D_FORTIFY_SOURCE` so when we add our setting
