@@ -7,6 +7,10 @@ export PATH="/bin:$PATH"
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 external_dir="$(cd "${script_dir}/../../../../" && pwd)"
+# The archive is a sibling external repo whose directory carries a canonical bzlmod name
+# ("<module>+<extension>+<name>"), so match on the suffix; only the repos this action
+# declares are linked into external/, so exactly one matches. See README.hacks.
+archive_dir="$(cd "${external_dir}"/*ubuntu-22.04-arm64-cross && pwd)"
 
 # ld (at least built and configured the way Ubuntu does,) doesn't work well with bazel's
 # sandbox symlinks: gcc resolves its own binary before deriving the library search paths it
@@ -17,7 +21,7 @@ external_dir="$(cd "${script_dir}/../../../../" && pwd)"
 # the symlinking sandbox, the hermetic sandbox and remote execution alike. Don't go looking
 # for it with `find` either -- the archives keep Ubuntu's merged-/usr layout, so libc.so.6
 # sits at more than one depth and any depth-based guess is ambiguous.
-gcc_realpath="$(realpath "${external_dir}/ubuntu-22.04-arm64-cross/usr/bin/aarch64-linux-gnu-gcc-11")"
+gcc_realpath="$(realpath "${archive_dir}/usr/bin/aarch64-linux-gnu-gcc-11")"
 sysroot="${gcc_realpath%/usr/bin/*}"
 
 # Required so the host binaries can find shared libraries they need.

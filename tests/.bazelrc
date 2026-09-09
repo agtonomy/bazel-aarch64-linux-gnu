@@ -1,6 +1,3 @@
-# Enable CC toolchain resolution (required for platform-based toolchain selection)
-build --incompatible_enable_cc_toolchain_resolution
-
 # Platform configurations
 build:aarch64 --platforms=@aarch64_linux_gnu//platforms:aarch64_generic
 build:jetpack_512 --platforms=@aarch64_linux_gnu//platforms:tegra_jetpack_512
@@ -22,10 +19,13 @@ build --verbose_failures
 # inputs. An RE exec platform has to supply them the same way (see README.md).
 build:hermetic --spawn_strategy=linux-sandbox
 build:hermetic --experimental_use_hermetic_linux_sandbox
+#
+# Mount each host directory under the /bin and /lib names Ubuntu's merged-/usr layout uses,
+# and only those: Bazel 9 keeps a single mount per source path, so adding an identity mount
+# for /usr/bin alongside /usr/bin:/bin drops the /bin mapping and the wrappers lose the
+# /bin/bash their shebang names.
 build:hermetic --sandbox_add_mount_pair=/usr/bin:/bin
-build:hermetic --sandbox_add_mount_pair=/usr/bin
 build:hermetic --sandbox_add_mount_pair=/usr/lib:/lib
-build:hermetic --sandbox_add_mount_pair=/usr/lib
 
 # x86_64 hosts also need /lib64, which holds the ELF interpreter every host binary names.
 # arm64 Ubuntu has no /usr/lib64 to mount, so it keeps the plain --config=hermetic.

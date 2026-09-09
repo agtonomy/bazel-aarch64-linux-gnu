@@ -1,0 +1,24 @@
+"""Test workspace: builds hello world with each toolchain this repo provides."""
+
+module(name = "toolchain_tests")
+
+bazel_dep(name = "rules_cc", version = "0.2.17")
+bazel_dep(name = "aarch64_linux_gnu", version = "0.0.0")
+local_path_override(
+    module_name = "aarch64_linux_gnu",
+    path = "..",
+)
+
+# Registrations in the root module outrank every registration a dependency makes, and
+# they have to: rules_cc registers an auto-detected host cc toolchain, which otherwise
+# wins the native x86_64 and aarch64 builds and quietly compiles with the host's gcc.
+# Jetpack first, so bazel prefers those over the generic toolchains. Consumers of this
+# module need the same block; see README.md.
+register_toolchains(
+    "@aarch64_linux_gnu//toolchain:jp512_linux_x86_64",
+    "@aarch64_linux_gnu//toolchain:jp62_linux_x86_64",
+    "@aarch64_linux_gnu//toolchain:jp512_linux_aarch64",
+    "@aarch64_linux_gnu//toolchain:aarch64_linux_x86_64",
+    "@aarch64_linux_gnu//toolchain:native_linux_aarch64",
+    "@aarch64_linux_gnu//toolchain:native_linux_x86_64",
+)

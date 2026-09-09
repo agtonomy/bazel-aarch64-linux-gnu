@@ -1,5 +1,9 @@
-load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
-load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set")
+load("@rules_cc//cc:action_names.bzl", "ACTION_NAMES")
+load("@rules_cc//cc:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set")
+
+# Bazel 9 removed the native `cc_common` and `CcToolchainConfigInfo` globals; both now come
+# from rules_cc, which re-exports them from //cc:defs.bzl for every supported Bazel version.
+load("@rules_cc//cc:defs.bzl", "CcToolchainConfigInfo", "cc_common")
 
 def wrapper_path(ctx, tool):
     return tool_path(name = tool, path = ctx.attr.wrapper_path + tool)

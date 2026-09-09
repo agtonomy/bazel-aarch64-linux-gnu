@@ -2,4 +2,8 @@
 set -euo pipefail
 
 external_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../" && pwd)"
-exec "${external_dir}/ubuntu-22.04-x86_64-native/usr/bin/x86_64-linux-gnu-cpp-11" "$@"
+# The archive is a sibling external repo whose directory carries a canonical bzlmod name
+# ("<module>+<extension>+<name>"), so match on the suffix; only the repos this action
+# declares are linked into external/, so exactly one matches. See README.hacks.
+archive_dir="$(cd "${external_dir}"/*ubuntu-22.04-x86_64-native && pwd)"
+exec "${archive_dir}/usr/bin/x86_64-linux-gnu-cpp-11" "$@"
