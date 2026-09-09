@@ -28,29 +28,44 @@ The main package contains (tarred from / in their original install paths):
 
 ## Usage
 
-Tested with Bazel version 6.5.0, though older versions should be compatible as well.
+Requires Bazel 7.7.1 or newer, and is tested on 7.7.1 and 9.x in CI. This is a
+bzlmod-only module: Bazel 9 removed WORKSPACE support, so there is no `deps.bzl`
+entry point to load from a `WORKSPACE` any more.
 
-Include the following in your `WORKSPACE` with appropriate commit and sha256sum
+Include the following in your `MODULE.bazel` with appropriate commit and sha256sum
 
 ```python
+bazel_dep(name = "aarch64_linux_gnu", version = "0.0.0")
 
 AARCH64_LINUX_GNU_COMMIT = "INSERT COMMIT HASH HERE"
 
-http_archive(
-    name = "aarch64_linux_gnu",
-    sha256 = "INSERT SHA256 HERE",
+archive_override(
+    module_name = "aarch64_linux_gnu",
+    integrity = "INSERT SHA256 HERE",
     strip_prefix = "bazel-aarch64-linux-gnu-" + AARCH64_LINUX_GNU_COMMIT,
     urls = ["https://github.com/agtonomy/bazel-aarch64-linux-gnu/archive/" + AARCH64_LINUX_GNU_COMMIT + ".tar.gz"],
 )
+```
 
-load("@aarch64_linux_gnu//:deps.bzl", "aarch64_linux_gnu_deps")
+The module registers its own toolchains, but a dependency's registrations rank below
+every registration the root module makes -- including the auto-detected host cc toolchain
+that `rules_cc` registers, which otherwise wins the native builds and quietly compiles
+with the host's own gcc. So register them from your root `MODULE.bazel` too, Jetpack
+first, so bazel prefers those over the generic toolchains:
 
-aarch64_linux_gnu_deps()
+```python
+register_toolchains(
+    "@aarch64_linux_gnu//toolchain:jp512_linux_x86_64",
+    "@aarch64_linux_gnu//toolchain:jp62_linux_x86_64",
+    "@aarch64_linux_gnu//toolchain:jp512_linux_aarch64",
+    "@aarch64_linux_gnu//toolchain:aarch64_linux_x86_64",
+    "@aarch64_linux_gnu//toolchain:native_linux_aarch64",
+    "@aarch64_linux_gnu//toolchain:native_linux_x86_64",
+)
 ```
 
 Then include the following in your `.bazelrc`
 ```bash
-build --incompatible_enable_cc_toolchain_resolution
 build:jetpack_512 --platforms=@aarch64_linux_gnu//platforms:jetpack_512
 build:jetpack_62 --platforms=@aarch64_linux_gnu//platforms:jetpack_62
 ```
@@ -120,9 +135,11 @@ CI runs this for every configuration, so under-declaration cannot regress silent
 
 ## How does this all work?
 Beginning from the project repository, the toolchain resolution process goes like:
-1. `aarch64_linux_gnu_deps` is loaded from `deps.bzl` and invoked.
-2. `aarch64_linux_gnu_deps` calls `native.register_toolchains` with labels of toolchains,
-    which are defined in `toolchain/BUILD`. Bazel prefers toolchains registered first if
+1. This repo's `MODULE.bazel` pulls in the gcc and linux-libc archives through the
+    `toolchains` module extension in `extensions.bzl`, which declares them with
+    `http_archive`.
+2. `MODULE.bazel` calls `register_toolchains` with labels of toolchains, which are
+    defined in `toolchain/BUILD`. Bazel prefers toolchains registered first if
     multiple toolchains support a target platform.
 3. `toolchain/BUILD` calls `toolchain` on outputs from `cc_toolchain` to associate them
     with platforms via host and target constraints. Note that constraints which are set
@@ -139,6 +156,9 @@ Beginning from the project repository, the toolchain resolution process goes lik
     various toolchain executables (really shell scripts which wrap them,) and build flags are
     defined. Keep in mind that relative paths are relative to the execroot which bazel sets
     up for each step of the build, with files from packages in a subdirectory of `external`,
-    eg `<execroot>/external/ubuntu-22.04-x86_64-native/usr/bin/x86_64-linux-gnu-ld`, which
-    breaks down to `external`, then the package name from the `http_archive` call, then the
-    path from within the tar archive (after the strip prefix is applied.)
+    eg `<execroot>/external/<repo>/usr/bin/x86_64-linux-gnu-ld`, which breaks down to
+    `external`, then the repo directory, then the path from within the tar archive (after
+    the strip prefix is applied.) Under bzlmod that repo directory is the canonical name
+    Bazel derives from the module and extension, eg
+    `aarch64_linux_gnu+toolchains+ubuntu-22.04-x86_64-native`, not the plain name passed to
+    `http_archive`, which is why nothing hardcodes it (see `README.hacks`).

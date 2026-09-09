@@ -1,0 +1,5 @@
+# Bazel convenience symlinks
+bazel-*
+
+# Resolution is exercised against several bazel versions, which write different lockfiles.
+MODULE.bazel.lock

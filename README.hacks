@@ -46,6 +46,20 @@ There are a few major issues to work around, both handled by:
     `$LD_LIBRARY_PATH` pointing at the bundled host libraries (`host-libs/` in the
     native archives, `usr/lib/x86_64-linux-gnu/` in the cross archive). This is
     also added to `aarch64-linux-gnu-ar` and `aarch64-linux-gnu-as`.
+4. The wrapper scripts live in this repo while the binaries they exec live in a
+    separate archive repo, so each wrapper has to name that repo's directory. It cannot
+    be hardcoded: under bzlmod the directory is the canonical name Bazel derives for an
+    extension-generated repo (`<module>+<extension>+<name>`), which depends on where the
+    module sits in the dependency graph. The wrappers instead `cd` up to `external/` and
+    glob for the suffix, `*ubuntu-22.04-arm64-cross`. Only the repos an action declares
+    are linked into its `external/`, so exactly one directory matches, and `cd` fails
+    loudly rather than silently picking one if that ever stops holding.
+    Glob after the `cd`, never across it: bash resolves symlinks while expanding a
+    pathname but keeps the logical path in `cd`, and `external/` is reached through a
+    symlink. `cd external/<repo>/../../../../*name` therefore walks out of the execroot
+    into wherever the repo really lives (for a `local_path_override` module, the source
+    tree) and matches nothing, which is how a non-sandboxed build fails while a sandboxed
+    one passes.
 
 Minor issues:
 1. Ubuntu gcc defaults to defining `-D_FORTIFY_SOURCE` so when we add our setting
