@@ -10,8 +10,13 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "headers",
-    srcs = glob([
-        "usr/aarch64-linux-gnu/include/**",
-        "usr/include/**",
-    ]),
+    srcs = glob(
+        [
+            "usr/aarch64-linux-gnu/include/**",
+            "usr/include/**",
+        ],
+        # Each downstream archive (native aarch64, native x86_64, cross) only ships one
+        # of these two include layouts; the other pattern legitimately matches nothing.
+        allow_empty = True,
+    ),
 )
