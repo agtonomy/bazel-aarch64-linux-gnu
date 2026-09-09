@@ -20,6 +20,12 @@ build --verbose_failures
 build:hermetic --spawn_strategy=linux-sandbox
 build:hermetic --experimental_use_hermetic_linux_sandbox
 #
+# The spawn strategy is not part of an action's key, so a hermetic build that follows a
+# default-sandbox build of the same targets is a pure cache hit and executes nothing --
+# which silently turns this guard into a no-op. Fork the configuration so the actions
+# have distinct keys and actually run under the hermetic sandbox.
+build:hermetic --platform_suffix=hermetic
+#
 # Mount each host directory under the /bin and /lib names Ubuntu's merged-/usr layout uses,
 # and only those: Bazel 9 keeps a single mount per source path, so adding an identity mount
 # for /usr/bin alongside /usr/bin:/bin drops the /bin mapping and the wrappers lose the

@@ -45,17 +45,17 @@ jobs:
         working-directory: tests
         run: bazel build //:all --config=aarch64
 
-      # rules_cc registers an auto-detected host cc toolchain, and it outranks a
-      # dependency module's registrations, so a mis-registered toolchain silently compiles
-      # with the host's gcc instead of failing. Assert the compiler is ours.
-      - name: Verify this repo's toolchain was selected (generic aarch64)
+      # Assert the compiler is ours, and that each Jetpack config gets the toolchain
+      # carrying its own linux-libc headers -- which is what registering the Jetpack
+      # toolchains first buys, and is otherwise invisible because every cross config
+      # drives the same wrapper. See verify_toolchain.sh for why this matters.
+      - name: Verify toolchain selection
         working-directory: tests
         run: |
-          bazel aquery 'mnemonic("CppCompile", //:hello_c)' --config=aarch64 --output=text \
-            | grep -qF 'toolchain/ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-gcc' \
-            || { echo "expected toolchain/ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-gcc, got:" >&2; \
-                 bazel aquery 'mnemonic("CppCompile", //:hello_c)' --config=aarch64 --output=text | grep -m1 exec >&2; \
-                 exit 1; }
+          ./verify_toolchain.sh \
+            aarch64 'toolchain/ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-gcc' \
+            jetpack_512 'linux-libc-5.4.0-aarch64-cross/usr/aarch64-linux-gnu/include' \
+            jetpack_62 'linux-libc-5.15.0-aarch64-cross/usr/aarch64-linux-gnu/include'
 
       - name: Verify binaries (generic aarch64)
         working-directory: tests
@@ -137,17 +137,11 @@ jobs:
         working-directory: tests
         run: bazel build //:all
 
-      # rules_cc registers an auto-detected host cc toolchain, and it outranks a
-      # dependency module's registrations, so a mis-registered toolchain silently compiles
-      # with the host's gcc instead of failing. Assert the compiler is ours.
-      - name: Verify this repo's toolchain was selected
+      # Assert the compiler is ours, not the host cc toolchain rules_cc auto-detects.
+      # See verify_toolchain.sh for why that is easy to miss.
+      - name: Verify toolchain selection
         working-directory: tests
-        run: |
-          bazel aquery 'mnemonic("CppCompile", //:hello_c)' --output=text \
-            | grep -qF 'toolchain/ubuntu-22.04-native/linux_x86_64/x86_64-linux-gnu-gcc' \
-            || { echo "expected toolchain/ubuntu-22.04-native/linux_x86_64/x86_64-linux-gnu-gcc, got:" >&2; \
-                 bazel aquery 'mnemonic("CppCompile", //:hello_c)' --output=text | grep -m1 exec >&2; \
-                 exit 1; }
+        run: ./verify_toolchain.sh '' 'toolchain/ubuntu-22.04-native/linux_x86_64/x86_64-linux-gnu-gcc'
 
       - name: Verify binaries
         working-directory: tests
@@ -194,17 +188,11 @@ jobs:
         working-directory: tests
         run: bazel build //:all
 
-      # rules_cc registers an auto-detected host cc toolchain, and it outranks a
-      # dependency module's registrations, so a mis-registered toolchain silently compiles
-      # with the host's gcc instead of failing. Assert the compiler is ours.
-      - name: Verify this repo's toolchain was selected
+      # Assert the compiler is ours, not the host cc toolchain rules_cc auto-detects.
+      # See verify_toolchain.sh for why that is easy to miss.
+      - name: Verify toolchain selection
         working-directory: tests
-        run: |
-          bazel aquery 'mnemonic("CppCompile", //:hello_c)' --output=text \
-            | grep -qF 'toolchain/ubuntu-22.04-native/linux_aarch64/aarch64-linux-gnu-gcc' \
-            || { echo "expected toolchain/ubuntu-22.04-native/linux_aarch64/aarch64-linux-gnu-gcc, got:" >&2; \
-                 bazel aquery 'mnemonic("CppCompile", //:hello_c)' --output=text | grep -m1 exec >&2; \
-                 exit 1; }
+        run: ./verify_toolchain.sh '' 'toolchain/ubuntu-22.04-native/linux_aarch64/aarch64-linux-gnu-gcc'
 
       - name: Verify binaries
         working-directory: tests
@@ -218,9 +206,21 @@ jobs:
           bazel-bin/hello_c
           bazel-bin/hello_cc
 
+      - name: Build (Jetpack 5.1.2)
+        working-directory: tests
+        run: bazel build //:all --config=jetpack_512
+
+      - name: Verify binaries (Jetpack 5.1.2)
+        working-directory: tests
+        run: |
+          ./verify_binary.sh bazel-bin/hello_c aarch64
+          ./verify_binary.sh bazel-bin/hello_cc aarch64
+
       - name: Build under hermetic sandbox (remote-execution guard)
         working-directory: tests
-        run: bazel build //:all --config=hermetic
+        run: |
+          bazel build //:all --config=hermetic
+          bazel build //:all --config=jetpack_512 --config=hermetic
 
   ci-ok:
     name: CI OK

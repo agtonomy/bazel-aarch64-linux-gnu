@@ -1,0 +1,2 @@
+# tests/ is a separate module, built from within tests/.
+tests
