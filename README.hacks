@@ -50,22 +50,18 @@ There are a few major issues to work around, most handled by the generated
     `cc_toolchain` target itself, and `tool_path` takes a plain string rather than a
     `Label`, so it has no way to reach into a different repository. That means a wrapper
     script named by `tool_path` has to live in the same repository as the `cc_toolchain`
-    that names it -- but the compiler binaries it execs come from a separately
-    `http_archive`-fetched repository whose on-disk directory is a canonical bzlmod name
-    this repo can't predict ahead of time (`<module>+<extension>+<name>`, which depends
-    on where the module sits in the dependency graph, and differs by Bazel major version
-    too -- Bazel 7 still uses the older `~`-separated form).
-    `toolchain/wrapper_repo.bzl` resolves this by generating a small companion
-    repository per compiler archive (`ubuntu-22.04-arm64-cross-toolchain` and so on) that
-    holds both the wrapper scripts and the `cc_toolchain`/`cc_linux_gnu_config`
-    declarations that name them, so `tool_path` always resolves locally. The
-    `repository_rule` that generates it takes a `Label` into the archive repo purely to
-    read `Label.workspace_root` off it -- the archive's execroot-relative path, which
-    Bazel always computes correctly regardless of the canonical name in use -- and bakes
-    that string into each wrapper script. At wrapper-script runtime, finding the
-    companion repo's own execroot-relative location is a fixed, three-level
-    `external/<this repo>/wrappers/<file>` traversal that this rule controls directly
-    (not a name it has to discover), so no `find` or glob is needed at all.
+    that names it.
+    `toolchain/archive_repo.bzl`'s `cc_archive_repo` repository rule handles this by
+    fetching the compiler archive itself (`ctx.download_and_extract`, in place of a
+    separate `http_archive`) and writing the wrapper scripts and the
+    `cc_toolchain`/`cc_linux_gnu_config` declarations that name them into that same
+    generated repository (`ubuntu-22.04-arm64-cross-toolchain` and so on). Since the
+    archive contents and the wrapper scripts always live side by side in one
+    self-contained repository this rule controls end to end, a wrapper never needs to
+    know any repository's canonical bzlmod name at all -- finding the archive is a
+    fixed, one-level, name-independent traversal from the wrapper's own location (its
+    own directory's parent), the same trick https://github.com/f0rmiga/gcc-toolchain
+    uses. No `find`, glob, or baked-in repository name is needed anywhere.
 
 Minor issues:
 1. Ubuntu gcc defaults to defining `-D_FORTIFY_SOURCE` so when we add our setting

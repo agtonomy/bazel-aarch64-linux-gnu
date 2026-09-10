@@ -10,7 +10,7 @@ which MODULE.bazel does for this repo itself.
 """
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("//toolchain:wrapper_repo.bzl", "cc_wrapper_repo")
+load("//toolchain:archive_repo.bzl", "cc_archive_repo")
 
 _ARM64_CROSS_BUILD_EXTRA = """
 filegroup(
@@ -43,7 +43,7 @@ filegroup(
     name = "jp62_compiler_pieces",
     srcs = [
         "@linux-libc-5.15.0-aarch64-cross//:headers",
-        "@ubuntu-22.04-arm64-cross//:compiler_pieces",
+        ":compiler_pieces",
     ],
 )
 
@@ -77,7 +77,7 @@ filegroup(
     name = "jp512_compiler_pieces",
     srcs = [
         "@linux-libc-5.4.0-aarch64-cross//:headers",
-        "@ubuntu-22.04-arm64-cross//:compiler_pieces",
+        ":compiler_pieces",
     ],
 )
 
@@ -86,7 +86,7 @@ cc_linux_gnu_config(
     gcc_repo = "ubuntu-22.04-arm64-cross",
     gcc_version = "11",
     host_system_name = "linux_x86_64",
-    sysroot = "@ubuntu-22.04-arm64-cross//:gcc",
+    sysroot = ":gcc",
     include_paths = [
         "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
         "usr/aarch64-linux-gnu/include/c++/11/",
@@ -104,7 +104,7 @@ cc_linux_gnu_config(
     gcc_repo = "ubuntu-22.04-arm64-cross",
     gcc_version = "11",
     host_system_name = "linux_x86_64",
-    sysroot = "@ubuntu-22.04-arm64-cross//:gcc",
+    sysroot = ":gcc",
     include_paths = [
         "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
         "usr/aarch64-linux-gnu/include/c++/11/",
@@ -169,7 +169,7 @@ filegroup(
     name = "aarch64_compiler_pieces",
     srcs = [
         "@linux-libc-5.15.0-aarch64//:headers",
-        "@ubuntu-22.04-aarch64-native//:compiler_pieces",
+        ":compiler_pieces",
     ],
 )
 
@@ -204,7 +204,7 @@ filegroup(
     name = "jp512_compiler_pieces",
     srcs = [
         "@linux-libc-5.4.0-aarch64//:headers",
-        "@ubuntu-22.04-aarch64-native//:compiler_pieces",
+        ":compiler_pieces",
     ],
 )
 
@@ -239,7 +239,7 @@ cc_linux_gnu_config(
     gcc_repo = "ubuntu-22.04-aarch64-native",
     gcc_version = "11",
     host_system_name = "linux_aarch64",
-    sysroot = "@ubuntu-22.04-aarch64-native//:gcc",
+    sysroot = ":gcc",
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
         "usr/lib/gcc/aarch64-linux-gnu/11/include/",
@@ -262,7 +262,7 @@ cc_linux_gnu_config(
     gcc_repo = "ubuntu-22.04-aarch64-native",
     gcc_version = "11",
     host_system_name = "linux_aarch64",
-    sysroot = "@ubuntu-22.04-aarch64-native//:gcc",
+    sysroot = ":gcc",
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
         "usr/lib/gcc/aarch64-linux-gnu/11/include/",
@@ -316,7 +316,7 @@ filegroup(
     name = "x86_64_compiler_pieces",
     srcs = [
         "@linux-libc-5.15.0-x86_64//:headers",
-        "@ubuntu-22.04-x86_64-native//:compiler_pieces",
+        ":compiler_pieces",
     ],
 )
 
@@ -351,7 +351,7 @@ cc_linux_gnu_config(
     gcc_repo = "ubuntu-22.04-x86_64-native",
     gcc_version = "11",
     host_system_name = "linux_x86_64",
-    sysroot = "@ubuntu-22.04-x86_64-native//:gcc",
+    sysroot = ":gcc",
     include_paths = [
         "usr/lib/gcc/x86_64-linux-gnu/11/include/",
         "usr/include/x86_64-linux-gnu/",
@@ -387,60 +387,42 @@ cc_toolchain(
 """
 
 def _toolchain_repositories():
-    http_archive(
-        name = "ubuntu-22.04-arm64-cross",
-        build_file = Label("//toolchain:ubuntu-22.04-arm64-cross.BUILD"),
-        sha256 = "14d7e4f9cc87a3320033062a6978d848e5702186c9478b73cfb1c03744302b5b",
-        strip_prefix = "ubuntu-22.04-arm64-cross",
+    cc_archive_repo(
+        name = "ubuntu-22.04-arm64-cross-toolchain",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-arm64-cross-2.tar.zst",
         ],
-    )
-
-    cc_wrapper_repo(
-        name = "ubuntu-22.04-arm64-cross-toolchain",
-        archive = "@ubuntu-22.04-arm64-cross//:gcc",
-        archive_apparent_name = "ubuntu-22.04-arm64-cross",
+        sha256 = "14d7e4f9cc87a3320033062a6978d848e5702186c9478b73cfb1c03744302b5b",
+        strip_prefix = "ubuntu-22.04-arm64-cross",
+        raw_build_file = Label("//toolchain:ubuntu-22.04-arm64-cross.BUILD"),
         variant = "cross",
         prefix = "aarch64-linux-gnu",
         gcc_version = "11",
         build_extra = _ARM64_CROSS_BUILD_EXTRA,
     )
 
-    http_archive(
-        name = "ubuntu-22.04-aarch64-native",
-        build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
-        sha256 = "2b009b59377e21581d67b0f5d6f314a0ef2249b1941b4fca03685bfc3facf8de",
-        strip_prefix = "ubuntu-22.04-aarch64-native",
+    cc_archive_repo(
+        name = "ubuntu-22.04-aarch64-native-toolchain",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-aarch64-native-2.tar.zst",
         ],
-    )
-
-    cc_wrapper_repo(
-        name = "ubuntu-22.04-aarch64-native-toolchain",
-        archive = "@ubuntu-22.04-aarch64-native//:gcc",
-        archive_apparent_name = "ubuntu-22.04-aarch64-native",
+        sha256 = "2b009b59377e21581d67b0f5d6f314a0ef2249b1941b4fca03685bfc3facf8de",
+        strip_prefix = "ubuntu-22.04-aarch64-native",
+        raw_build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
         variant = "native",
         prefix = "aarch64-linux-gnu",
         gcc_version = "11",
         build_extra = _AARCH64_NATIVE_BUILD_EXTRA,
     )
 
-    http_archive(
-        name = "ubuntu-22.04-x86_64-native",
-        build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
-        sha256 = "342fc43d0fa977edcb4e9d6840a0c289bc09123327eff05c6a399964a0bfaaa2",
-        strip_prefix = "ubuntu-22.04-x86_64-native",
+    cc_archive_repo(
+        name = "ubuntu-22.04-x86_64-native-toolchain",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-x86_64-native-2.tar.zst",
         ],
-    )
-
-    cc_wrapper_repo(
-        name = "ubuntu-22.04-x86_64-native-toolchain",
-        archive = "@ubuntu-22.04-x86_64-native//:gcc",
-        archive_apparent_name = "ubuntu-22.04-x86_64-native",
+        sha256 = "342fc43d0fa977edcb4e9d6840a0c289bc09123327eff05c6a399964a0bfaaa2",
+        strip_prefix = "ubuntu-22.04-x86_64-native",
+        raw_build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
         variant = "native",
         prefix = "x86_64-linux-gnu",
         gcc_version = "11",
