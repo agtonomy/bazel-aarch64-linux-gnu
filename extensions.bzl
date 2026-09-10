@@ -388,7 +388,7 @@ cc_toolchain(
 
 def _toolchain_repositories():
     cc_archive_repo(
-        name = "ubuntu-22.04-arm64-cross-toolchain",
+        name = "ubuntu-22.04-arm64-cross",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-arm64-cross-2.tar.zst",
         ],
@@ -402,7 +402,7 @@ def _toolchain_repositories():
     )
 
     cc_archive_repo(
-        name = "ubuntu-22.04-aarch64-native-toolchain",
+        name = "ubuntu-22.04-aarch64-native",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-aarch64-native-2.tar.zst",
         ],
@@ -416,7 +416,7 @@ def _toolchain_repositories():
     )
 
     cc_archive_repo(
-        name = "ubuntu-22.04-x86_64-native-toolchain",
+        name = "ubuntu-22.04-x86_64-native",
         urls = [
             "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-x86_64-native-2.tar.zst",
         ],

@@ -17,9 +17,9 @@ use_repo(
     "linux-libc-5.15.0-x86_64",
     "linux-libc-5.4.0-aarch64",
     "linux-libc-5.4.0-aarch64-cross",
-    "ubuntu-22.04-aarch64-native-toolchain",
-    "ubuntu-22.04-arm64-cross-toolchain",
-    "ubuntu-22.04-x86_64-native-toolchain",
+    "ubuntu-22.04-aarch64-native",
+    "ubuntu-22.04-arm64-cross",
+    "ubuntu-22.04-x86_64-native",
 )
 
 # Register the Jetpack toolchains first, so bazel chooses them over the generic ones.

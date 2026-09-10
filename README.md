@@ -156,7 +156,7 @@ Beginning from the project repository, the toolchain resolution process goes lik
     `cc_archive_repo` repository rule handles this by fetching the archive itself (in
     place of a separate `http_archive`) and writing the wrapper scripts and
     `cc_toolchain`/`cc_linux_gnu_config` declarations into that same generated repo (eg
-    `ubuntu-22.04-arm64-cross-toolchain`), called from `extensions.bzl`. Each compiler
+    `ubuntu-22.04-arm64-cross`), called from `extensions.bzl`. Each compiler
     may support multiple similar platforms by including slightly different headers and
     calling `cc_toolchain` with platform-specific filegroups and config within that same
     generated repo.

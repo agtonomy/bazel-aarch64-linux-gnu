@@ -55,7 +55,7 @@ There are a few major issues to work around, most handled by the generated
     fetching the compiler archive itself (`ctx.download_and_extract`, in place of a
     separate `http_archive`) and writing the wrapper scripts and the
     `cc_toolchain`/`cc_linux_gnu_config` declarations that name them into that same
-    generated repository (`ubuntu-22.04-arm64-cross-toolchain` and so on). Since the
+    generated repository (`ubuntu-22.04-arm64-cross` and so on). Since the
     archive contents and the wrapper scripts always live side by side in one
     self-contained repository this rule controls end to end, a wrapper never needs to
     know any repository's canonical bzlmod name at all -- finding the archive is a
