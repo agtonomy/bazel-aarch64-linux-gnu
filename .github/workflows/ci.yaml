@@ -53,7 +53,7 @@ jobs:
         working-directory: tests
         run: |
           ./verify_toolchain.sh \
-            aarch64 'toolchain/ubuntu-22.04-arm64-cross/linux_x86_64/aarch64-linux-gnu-gcc' \
+            aarch64 'wrappers/aarch64-linux-gnu-gcc' \
             jetpack_512 'linux-libc-5.4.0-aarch64-cross/usr/aarch64-linux-gnu/include' \
             jetpack_62 'linux-libc-5.15.0-aarch64-cross/usr/aarch64-linux-gnu/include'
 
@@ -141,7 +141,7 @@ jobs:
       # See verify_toolchain.sh for why that is easy to miss.
       - name: Verify toolchain selection
         working-directory: tests
-        run: ./verify_toolchain.sh '' 'toolchain/ubuntu-22.04-native/linux_x86_64/x86_64-linux-gnu-gcc'
+        run: ./verify_toolchain.sh '' 'wrappers/x86_64-linux-gnu-gcc'
 
       - name: Verify binaries
         working-directory: tests
@@ -192,7 +192,7 @@ jobs:
       # See verify_toolchain.sh for why that is easy to miss.
       - name: Verify toolchain selection
         working-directory: tests
-        run: ./verify_toolchain.sh '' 'toolchain/ubuntu-22.04-native/linux_aarch64/aarch64-linux-gnu-gcc'
+        run: ./verify_toolchain.sh '' 'wrappers/aarch64-linux-gnu-gcc'
 
       - name: Verify binaries
         working-directory: tests
