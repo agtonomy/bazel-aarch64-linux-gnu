@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Ensure basic shell utilities are available (needed when running under nvcc with stripped PATH)
-export PATH="/bin:$PATH"
+export PATH="/bin:/usr/bin:$PATH"
 
 # Always resolve from script location so paths work when a caller (e.g. rules_go) chdirs:
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
