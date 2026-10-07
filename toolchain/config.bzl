@@ -177,6 +177,11 @@ def _impl(ctx):
         enabled = True,
     )
 
+    prefer_pic_for_opt_binaries_feature = feature(
+        name = "prefer_pic_for_opt_binaries",
+        enabled = False,
+    )
+
     supports_start_end_lib_feature = feature(
         name = "supports_start_end_lib",
         enabled = True,
@@ -200,6 +205,7 @@ def _impl(ctx):
             toolchain_compiler_flags,
             toolchain_linker_flags,
             supports_pic_feature,  # Allows bazel to choose when to add -fPIC, needed for python bindings
+            prefer_pic_for_opt_binaries_feature,
             supports_start_end_lib_feature,  # Faster builds by linking .o files rather than building static libraries
             unfiltered_compile_flags_feature,
         ],
