@@ -17,6 +17,12 @@ filegroup(
     srcs = glob(["usr/bin/aarch64-linux-gnu-ar*"]),
 )
 
+# gcov executables.
+filegroup(
+    name = "gcov",
+    srcs = glob(["usr/bin/aarch64-linux-gnu-gcov*"]),
+)
+
 # ld executables.
 filegroup(
     name = "ld",

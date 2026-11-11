@@ -116,6 +116,14 @@ filegroup(
 )
 
 filegroup(
+    name = "coverage_files",
+    srcs = [
+        "wrappers/{prefix}-gcov",
+        ":gcov",
+    ],
+)
+
+filegroup(
     name = "objcopy_files",
     srcs = [
         "wrappers/{prefix}-objcopy",

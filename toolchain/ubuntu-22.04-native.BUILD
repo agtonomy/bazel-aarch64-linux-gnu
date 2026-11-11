@@ -22,6 +22,12 @@ filegroup(
         ]),
 )
 
+# gcov executables.
+filegroup(
+    name = "gcov",
+    srcs = glob(["usr/bin/*-linux-gnu-gcov*"]),
+)
+
 # ld executables.
 filegroup(
     name = "ld",
