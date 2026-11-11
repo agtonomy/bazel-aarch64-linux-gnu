@@ -1,4 +1,4 @@
-"""aarch64-linux-gnu gcc 11 toolchains for Bazel."""
+"""aarch64-linux-gnu gcc toolchains for Bazel."""
 
 module(
     name = "aarch64_linux_gnu",

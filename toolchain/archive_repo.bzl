@@ -66,7 +66,12 @@ def _cc_archive_repo_impl(rctx):
     # ar_files/as_files there), and adding it would be a behavior change, not a port.
     linker_host_libraries = "" if is_cross else '        ":host_libraries",\n'
 
-    raw_content = rctx.read(rctx.attr.raw_build_file)
+    # The raw and extra BUILD text spell the gcc version as %{gcc_version}% so that it is
+    # specified in one place (toolchain/version.bzl).
+    def with_version(text):
+        return text.replace("%{gcc_version}%", version)
+
+    raw_content = with_version(rctx.read(rctx.attr.raw_build_file))
 
     generated_content = """
 filegroup(name = "empty", srcs = [])
@@ -140,7 +145,7 @@ load("@rules_cc//cc:defs.bzl", "cc_toolchain")
 
 """
 
-    rctx.file("BUILD.bazel", loads + raw_content + generated_content + rctx.attr.build_extra)
+    rctx.file("BUILD.bazel", loads + raw_content + generated_content + with_version(rctx.attr.build_extra))
 
 cc_archive_repo = repository_rule(
     implementation = _cc_archive_repo_impl,

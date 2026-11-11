@@ -11,6 +11,7 @@ which MODULE.bazel does for this repo itself.
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("//toolchain:archive_repo.bzl", "cc_archive_repo")
+load("//toolchain:version.bzl", "GCC_VERSION")
 
 _ARM64_CROSS_BUILD_EXTRA = """
 filegroup(
@@ -84,13 +85,13 @@ filegroup(
 cc_linux_gnu_config(
     name = "jp62_config",
     gcc_repo = "ubuntu-22.04-arm64-cross",
-    gcc_version = "11",
+    gcc_version = "%{gcc_version}%",
     host_system_name = "linux_x86_64",
     sysroot = ":gcc",
     include_paths = [
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
-        "usr/aarch64-linux-gnu/include/c++/11/",
-        "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/%{gcc_version}%/include/",
+        "usr/aarch64-linux-gnu/include/c++/%{gcc_version}%/",
+        "usr/aarch64-linux-gnu/include/c++/%{gcc_version}%/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
     ],
     libc_headers = "@linux-libc-5.15.0-aarch64-cross//:headers",
@@ -102,13 +103,13 @@ cc_linux_gnu_config(
 cc_linux_gnu_config(
     name = "jp512_config",
     gcc_repo = "ubuntu-22.04-arm64-cross",
-    gcc_version = "11",
+    gcc_version = "%{gcc_version}%",
     host_system_name = "linux_x86_64",
     sysroot = ":gcc",
     include_paths = [
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/",
-        "usr/aarch64-linux-gnu/include/c++/11/",
-        "usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/%{gcc_version}%/include/",
+        "usr/aarch64-linux-gnu/include/c++/%{gcc_version}%/",
+        "usr/aarch64-linux-gnu/include/c++/%{gcc_version}%/aarch64-linux-gnu",
         "usr/aarch64-linux-gnu/include/",
     ],
     libc_headers = "@linux-libc-5.4.0-aarch64-cross//:headers",
@@ -117,9 +118,9 @@ cc_linux_gnu_config(
     wrapper_path = "wrappers/aarch64-linux-gnu-",
 )
 
-# Ubuntu 22.04 gcc 11 ARM64 on x86_64 Cross Compile Toolchain
+# Ubuntu 22.04 gcc ARM64 on x86_64 Cross Compile Toolchain
 cc_toolchain(
-    name = "aarch64_gcc-11_linux_x86_64",
+    name = "aarch64_gcc-%{gcc_version}%_linux_x86_64",
     all_files = ":jp62_all_files",
     ar_files = ":ar_files",
     compiler_files = ":jp62_compiler_files",
@@ -132,10 +133,10 @@ cc_toolchain(
     toolchain_identifier = "jp62_linux_x86_64",
 )
 
-# Same definitions as aarch64_gcc-11_linux_x86_64, but creates a distinct target,
+# Same definitions as aarch64_gcc-%{gcc_version}%_linux_x86_64, but creates a distinct target,
 # to make the output of bazel --toolchain_resolution_debug clearer:
 cc_toolchain(
-    name = "jp62_aarch64_gcc-11_linux_x86_64",
+    name = "jp62_aarch64_gcc-%{gcc_version}%_linux_x86_64",
     all_files = ":jp62_all_files",
     ar_files = ":ar_files",
     compiler_files = ":jp62_compiler_files",
@@ -150,7 +151,7 @@ cc_toolchain(
 
 # Same as jp62, but bundles linux-libc-headers from kernel 5.4.0:
 cc_toolchain(
-    name = "jp512_aarch64_gcc-11_linux_x86_64",
+    name = "jp512_aarch64_gcc-%{gcc_version}%_linux_x86_64",
     all_files = ":jp512_all_files",
     ar_files = ":ar_files",
     compiler_files = ":jp512_compiler_files",
@@ -237,15 +238,15 @@ filegroup(
 cc_linux_gnu_config(
     name = "aarch64_config",
     gcc_repo = "ubuntu-22.04-aarch64-native",
-    gcc_version = "11",
+    gcc_version = "%{gcc_version}%",
     host_system_name = "linux_aarch64",
     sysroot = ":gcc",
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
-        "usr/lib/gcc/aarch64-linux-gnu/11/include/",
+        "usr/lib/gcc/aarch64-linux-gnu/%{gcc_version}%/include/",
         "usr/include/aarch64-linux-gnu/",
-        "usr/include/c++/11/",
-        "usr/include/aarch64-linux-gnu/c++/11/",
+        "usr/include/c++/%{gcc_version}%/",
+        "usr/include/aarch64-linux-gnu/c++/%{gcc_version}%/",
         "usr/include/",
     ],
     libc_headers = "@linux-libc-5.15.0-aarch64//:headers",
@@ -260,15 +261,15 @@ cc_linux_gnu_config(
 cc_linux_gnu_config(
     name = "jp512_config",
     gcc_repo = "ubuntu-22.04-aarch64-native",
-    gcc_version = "11",
+    gcc_version = "%{gcc_version}%",
     host_system_name = "linux_aarch64",
     sysroot = ":gcc",
     include_paths = [
         # Path order is important to avoid bazel errors about undeclared files:
-        "usr/lib/gcc/aarch64-linux-gnu/11/include/",
+        "usr/lib/gcc/aarch64-linux-gnu/%{gcc_version}%/include/",
         "usr/include/aarch64-linux-gnu/",
-        "usr/include/c++/11/",
-        "usr/include/aarch64-linux-gnu/c++/11/",
+        "usr/include/c++/%{gcc_version}%/",
+        "usr/include/aarch64-linux-gnu/c++/%{gcc_version}%/",
         "usr/include/",
     ],
     libc_headers = "@linux-libc-5.4.0-aarch64//:headers",
@@ -280,9 +281,9 @@ cc_linux_gnu_config(
     wrapper_path = "wrappers/aarch64-linux-gnu-",
 )
 
-# Ubuntu 22.04 gcc 11 aarch64 Native Toolchain
+# Ubuntu 22.04 gcc aarch64 Native Toolchain
 cc_toolchain(
-    name = "gcc-11_linux_aarch64",
+    name = "gcc-%{gcc_version}%_linux_aarch64",
     all_files = ":aarch64_all_files",
     ar_files = ":ar_files",
     compiler_files = ":aarch64_compiler_files",
@@ -295,9 +296,9 @@ cc_toolchain(
     toolchain_identifier = "linux_aarch64",
 )
 
-# Ubuntu 22.04 gcc 11 aarch64 jp512 toolchain
+# Ubuntu 22.04 gcc aarch64 jp512 toolchain
 cc_toolchain(
-    name = "jp512_aarch64_gcc-11_linux",
+    name = "jp512_aarch64_gcc-%{gcc_version}%_linux",
     all_files = ":jp512_all_files",
     ar_files = ":ar_files",
     compiler_files = ":jp512_compiler_files",
@@ -349,14 +350,14 @@ filegroup(
 cc_linux_gnu_config(
     name = "x86_64_config",
     gcc_repo = "ubuntu-22.04-x86_64-native",
-    gcc_version = "11",
+    gcc_version = "%{gcc_version}%",
     host_system_name = "linux_x86_64",
     sysroot = ":gcc",
     include_paths = [
-        "usr/lib/gcc/x86_64-linux-gnu/11/include/",
+        "usr/lib/gcc/x86_64-linux-gnu/%{gcc_version}%/include/",
         "usr/include/x86_64-linux-gnu/",
-        "usr/include/c++/11/",
-        "usr/include/x86_64-linux-gnu/c++/11/",
+        "usr/include/c++/%{gcc_version}%/",
+        "usr/include/x86_64-linux-gnu/c++/%{gcc_version}%/",
         "usr/include/",
     ],
     libc_headers = "@linux-libc-5.15.0-x86_64//:headers",
@@ -370,9 +371,9 @@ cc_linux_gnu_config(
     wrapper_path = "wrappers/x86_64-linux-gnu-",
 )
 
-# Ubuntu 22.04 gcc 11 x86_64 Native Toolchain
+# Ubuntu 22.04 gcc x86_64 Native Toolchain
 cc_toolchain(
-    name = "gcc-11_linux_x86_64",
+    name = "gcc-%{gcc_version}%_linux_x86_64",
     all_files = ":x86_64_all_files",
     ar_files = ":ar_files",
     compiler_files = ":x86_64_compiler_files",
@@ -390,42 +391,42 @@ def _toolchain_repositories():
     cc_archive_repo(
         name = "ubuntu-22.04-arm64-cross",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-arm64-cross-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-arm64-gcc12-cross.tar.zst",
         ],
-        sha256 = "14d7e4f9cc87a3320033062a6978d848e5702186c9478b73cfb1c03744302b5b",
-        strip_prefix = "ubuntu-22.04-arm64-cross",
+        sha256 = "29553d3d2636f3753a6cddcbca6ef7df6c1711e52a314b1593fc1658796e1843",
+        strip_prefix = "ubuntu-22.04-arm64-gcc12-cross",
         raw_build_file = Label("//toolchain:ubuntu-22.04-arm64-cross.BUILD"),
         variant = "cross",
         prefix = "aarch64-linux-gnu",
-        gcc_version = "11",
+        gcc_version = GCC_VERSION,
         build_extra = _ARM64_CROSS_BUILD_EXTRA,
     )
 
     cc_archive_repo(
         name = "ubuntu-22.04-aarch64-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-aarch64-native-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-aarch64-gcc12-native.tar.zst",
         ],
-        sha256 = "2b009b59377e21581d67b0f5d6f314a0ef2249b1941b4fca03685bfc3facf8de",
-        strip_prefix = "ubuntu-22.04-aarch64-native",
+        sha256 = "e7b20f1c0ef775615145e9a9ec5789e0e15dcb87af5b8ac07569ae117aa9b244",
+        strip_prefix = "ubuntu-22.04-aarch64-gcc12-native",
         raw_build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
         variant = "native",
         prefix = "aarch64-linux-gnu",
-        gcc_version = "11",
+        gcc_version = GCC_VERSION,
         build_extra = _AARCH64_NATIVE_BUILD_EXTRA,
     )
 
     cc_archive_repo(
         name = "ubuntu-22.04-x86_64-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain/ubuntu-22.04-x86_64-native-2.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-x86_64-gcc12-native.tar.zst",
         ],
-        sha256 = "342fc43d0fa977edcb4e9d6840a0c289bc09123327eff05c6a399964a0bfaaa2",
-        strip_prefix = "ubuntu-22.04-x86_64-native",
+        sha256 = "0baebd45476511f3a06454688aacb628185b8eb2cc548fc0449595045b538666",
+        strip_prefix = "ubuntu-22.04-x86_64-gcc12-native",
         raw_build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
         variant = "native",
         prefix = "x86_64-linux-gnu",
-        gcc_version = "11",
+        gcc_version = GCC_VERSION,
         build_extra = _X86_64_NATIVE_BUILD_EXTRA,
     )
 
