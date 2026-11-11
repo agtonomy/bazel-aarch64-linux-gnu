@@ -82,7 +82,7 @@ filegroup(
         "usr/include/**/*.h",
         "usr/include/*.h",
         "usr/include/c++/**",
-        "usr/lib/gcc/*-linux-gnu/11/include/**/*.h",
+        "usr/lib/gcc/*-linux-gnu/%{gcc_version}%/include/**/*.h",
     ]),
 )
 
@@ -98,7 +98,7 @@ filegroup(
     srcs = glob(
         [
             "usr/lib/*-linux-gnu/**",
-            "usr/lib/gcc/*-linux-gnu/11/**",
+            "usr/lib/gcc/*-linux-gnu/%{gcc_version}%/**",
             # The archives keep Ubuntu's merged-/usr layout, where the top-level
             # lib/ and lib64/ are symlinks into usr/. glibc's ld scripts name the
             # /lib spelling -- libc.so is

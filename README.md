@@ -6,7 +6,7 @@ The structure was inspired by: https://asnaghi.me/post/embedded-bazel/,
 then re-worked to support bazel CC toolchain auto-resolution / platforms.
 
 ## Toolchain
-The toolchain implemented is: gcc / 11.4.0, from Ubuntu 22.04, in three configurations:
+The toolchain implemented is: gcc / 12.3.0, from Ubuntu 22.04, in three configurations:
  - cross build for aarch64 target on x86_64 host
  - native build for aarch64
  - native build for x86_64
