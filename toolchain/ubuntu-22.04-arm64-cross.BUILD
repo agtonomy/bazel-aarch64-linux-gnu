@@ -81,7 +81,7 @@ filegroup(
         "usr/aarch64-linux-gnu/include/**/*.h",
         "usr/aarch64-linux-gnu/include/**/*.hpp",
         "usr/aarch64-linux-gnu/include/c++/**",
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/include/**/*.h",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/%{gcc_version}%/include/**/*.h",
     ]),
 )
 
@@ -95,7 +95,7 @@ filegroup(
     name = "libraries",
     srcs = glob([
         "usr/aarch64-linux-gnu/lib/**",
-        "usr/lib/gcc-cross/aarch64-linux-gnu/11/**",
+        "usr/lib/gcc-cross/aarch64-linux-gnu/%{gcc_version}%/**",
     ]),
 )
 
