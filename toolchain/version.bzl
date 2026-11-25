@@ -5,4 +5,4 @@ version-specific include and library directories inside the archives, and the na
 the generated cc_toolchain targets.
 """
 
-GCC_VERSION = "12"
+GCC_VERSION = "13"

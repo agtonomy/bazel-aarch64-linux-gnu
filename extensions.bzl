@@ -398,17 +398,17 @@ def _toolchain_repositories():
         raw_build_file = Label("//toolchain:ubuntu-22.04-arm64-cross.BUILD"),
         variant = "cross",
         prefix = "aarch64-linux-gnu",
-        gcc_version = GCC_VERSION,
+        gcc_version = "12",
         build_extra = _ARM64_CROSS_BUILD_EXTRA,
     )
 
     cc_archive_repo(
         name = "ubuntu-22.04-aarch64-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-aarch64-gcc12.3.0-native.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-aarch64-gcc13-native.tar.zst",
         ],
-        sha256 = "e7b20f1c0ef775615145e9a9ec5789e0e15dcb87af5b8ac07569ae117aa9b244",
-        strip_prefix = "ubuntu-22.04-aarch64-gcc12-native",
+        sha256 = "53ef3db38444de27da5a2fe68833fc28f3c6c40425dc93de9ef837067fa4efe7",
+        strip_prefix = "ubuntu-22.04-aarch64-gcc13-native",
         raw_build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
         variant = "native",
         prefix = "aarch64-linux-gnu",
@@ -419,10 +419,10 @@ def _toolchain_repositories():
     cc_archive_repo(
         name = "ubuntu-22.04-x86_64-native",
         urls = [
-            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-x86_64-gcc12.3.0-native.tar.zst",
+            "http://dependency-mirror.s3.amazonaws.com/toolchain-next/ubuntu-22.04-x86_64-gcc13-native.tar.zst",
         ],
-        sha256 = "0baebd45476511f3a06454688aacb628185b8eb2cc548fc0449595045b538666",
-        strip_prefix = "ubuntu-22.04-x86_64-gcc12-native",
+        sha256 = "c4e4bc63f4ce086b439c7f6b0e8e4b845f944bc508a8174453fb3133db5adb0f",
+        strip_prefix = "ubuntu-22.04-x86_64-gcc13-native",
         raw_build_file = Label("//toolchain:ubuntu-22.04-native.BUILD"),
         variant = "native",
         prefix = "x86_64-linux-gnu",

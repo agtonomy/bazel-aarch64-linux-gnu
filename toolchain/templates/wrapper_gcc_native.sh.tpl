@@ -27,8 +27,9 @@ sysroot="${gcc_realpath%/usr/bin/*}"
 # Required so the host binaries can find shared libraries they need:
 [ -d "${sysroot}/host-libs" ] && export LD_LIBRARY_PATH="${sysroot}/host-libs"
 
-sanitizer_rpath=()
-[[ "$*" == *-fsanitize=* ]] && sanitizer_rpath=("-Wl,-rpath,${sysroot}/usr/lib/%{lib_arch}%/")
+# Binaries run on the build host (exec tools such as protoc, and tests) are linked against this
+# archive's libstdc++, which is newer than the one the host provides, so point them at the archive's copy.
+runtime_rpath=("-Wl,-rpath,${sysroot}/usr/lib/%{lib_arch}%/")
 
 # Due to https://github.com/bazelbuild/bazel/issues/16222 this is the only spot we can add
 # the --no-as-needed ld flag to make the final binary list every shared library provided on
@@ -38,6 +39,6 @@ sanitizer_rpath=()
 "$gcc_realpath" \
     -Wl,--no-as-needed \
     "-B${sysroot}/usr/bin/" \
-    "${sanitizer_rpath[@]}" \
+    "${runtime_rpath[@]}" \
     "-B${script_dir}/" \
     "$@" --sysroot="$sysroot"
